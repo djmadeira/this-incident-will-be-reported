@@ -17,7 +17,6 @@
       height: 40em;
       background: linear-gradient(to top, #0E100F, #1C211F);
       margin: 0 auto;
-      margin-top: 2em;
       padding: 1em;
       overflow-y:scroll;
       border: 20px solid;
@@ -48,6 +47,11 @@
     }
     ::selection {
       background-color: #54F900;
+    }
+    @media only screen and (min-width: 800px) {
+      .terminal {
+        margin-top: 2em;
+      }
     }
   </style>
   <template id="shell-template">
