@@ -1,5 +1,15 @@
+/**
+  *
+**/
+
 var terminal = function (undefined) {
   "use strict";
+  var term = document.getElementById('terminal'),
+      termWrap = document.getElementById('term-wrap'),
+      shell,
+      shellInput,
+      noteTemplate = document.getElementById('note-template'),
+      noteRemovableTemplate = document.getElementById('note-removeable-template');
 
   var appendInput = function () {
     if (document.getElementById('shell') == null) {
@@ -20,6 +30,9 @@ var terminal = function (undefined) {
       if (event.keyIdentifier === 'Enter') {
         submitInput();
       }
+    });
+    shellInput.addEventListener('blur', function() {
+      shellInput.focus();
     });
   }
 
@@ -43,10 +56,6 @@ var terminal = function (undefined) {
   var sep = function () {
     return "<hr>";
   }
-
-  var term = document.getElementById('terminal'),
-      shell,
-      shellInput;
 
   var commands = {
     help: {
@@ -75,7 +84,7 @@ var terminal = function (undefined) {
       }
     },
     list: {
-      man: 'List files in the current directory',
+      man: 'List files in the current directory.',
       run: function (options) {
         var output = "";
         for (var file in directories) {
@@ -86,6 +95,17 @@ var terminal = function (undefined) {
           }
         }
         return output;
+      }
+    },
+    go: {
+      man: 'Move to the specified location.<br>Usage: go [path/to/location]<br>Use .. to represent the parent directory; e.g. to go up one directory, type go ..',
+      run: function (options) {
+        if (options[1] !== null) {
+          var path = options[1].split("/");
+
+        } else {
+          return 'Usage: go [path/to/location]';
+        }
       }
     },
     open: {
@@ -108,16 +128,37 @@ var terminal = function (undefined) {
     invisible: function (options) {
 
     }
-  }
+  };
+
+  var addNote = function (noteBody, removable) {
+    if (removable == undefined || removable == true) {
+      var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
+    } else {
+      var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
+    }
+    var noteText = document.createElement('p');
+    noteText.innerHTML = noteBody;
+    note.appendChild(noteText);
+    var rotation = Math.round(Math.random() * 4 - 2);
+    note.style.transform = "rotateZ("+rotation+"deg)";
+    note.style.webkitTransform = "rotateZ("+rotation+"deg)";
+    console.log(note.style);
+
+    note.querySelector('.note-remove').addEventListener('click', function () {
+      this.parentNode.parentNode.removeChild(this.parentNode);
+    });
+    termWrap.appendChild(note);
+  };
 
   var directories = {
     "notes": sep() + "I should really try to write things down more. I forgot that last time I logged onto the Weyland mainframe I nearly lost a program to that GRIM." + sep(),
     "documents": {
       "doc": "Testing",
     }
-  }
+  };
 
   appendInput();
+  addNote('DON\'T FORGET: CHECK MESSAGES', true);
 
 };
 
