@@ -2,14 +2,15 @@
   *
 **/
 
-var terminal = function (undefined) {
+var terminal = function () {
   "use strict";
   var term = document.getElementById('terminal'),
       termWrap = document.getElementById('term-wrap'),
       shell,
       shellInput,
       noteTemplate = document.getElementById('note-template'),
-      noteRemovableTemplate = document.getElementById('note-removeable-template');
+      noteRemovableTemplate = document.getElementById('note-removeable-template'),
+      currentId = 'uniqueid0';
 
   var appendInput = function () {
     if (document.getElementById('shell') == null) {
@@ -31,9 +32,6 @@ var terminal = function (undefined) {
         submitInput();
       }
     });
-    shellInput.addEventListener('blur', function() {
-      shellInput.focus();
-    });
   }
 
   var submitInput = function () {
@@ -49,19 +47,67 @@ var terminal = function (undefined) {
     if (typeof commands[tokens[0]] == 'object') {
       return commands[tokens[0]].run(tokens);
     } else {
-      return 'ERR: Please use a valid command name (hint: try \'help\')';
+      if (typeof secretCommands[tokens[0]] == 'object') {
+        commands[tokens[0]] = secretCommands[tokens[0]];
+        return 'Program "'+tokens[0]+'" installed.';
+      }
+      return 'ERR: Please use a valid program name (try "help")';
     }
   }
 
   var sep = function () {
     return "<hr>";
+  };
+
+  var addNote = function (noteBody, removable) {
+    if (removable == undefined || removable == true) {
+      var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
+    } else {
+      var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
+    }
+    var noteText = document.createElement('p');
+    noteText.innerHTML = noteBody;
+    note.appendChild(noteText);
+    var rotation = Math.round(Math.random() * 4 - 2);
+    note.style.transform = "rotateZ("+rotation+"deg)";
+    note.style.webkitTransform = "rotateZ("+rotation+"deg)";
+
+    note.querySelector('.note-remove').addEventListener('click', function () {
+      this.parentNode.parentNode.removeChild(this.parentNode);
+      shellInput.focus();
+    });
+    termWrap.appendChild(note);
+
+  };
+
+  var installAnimation = function (url) {
+    var progressText = 'Progress: 0%';
+    var outputWrap = document.getElementById('shell-line-template').content.cloneNode(true);
+    currentId = 'uniqueid'+ (parseInt(currentId.charAt(8)) + 1);
+    outputWrap.querySelector('.shell-line').id = currentId;
+    outputWrap.querySelector('.shell-line').innerHTML = progressText;
+    term.appendChild(outputWrap);
+    appendInput();
+    window.setTimeout(installAnimRep, 50);
+  };
+
+  var installAnimRep = function () {
+    var div = document.getElementById(currentId);
+    var inner = div.innerHTML;
+    console.log(inner);
+    var progress = parseInt(inner.match(/Progress\: (\d{1,2})\%/)[0]);
+    if (progress >= 100) {
+      return;
+    }
+    div.innerHTML = inner.replace(/Progress\: ([0-9]{1,2})/, progress + 10);
+    window.setTimeout(installAnimRep, 50);
   }
 
   var commands = {
     help: {
       man: 'Displays information about installed programs, or lists all programs if none is supplied.',
       run: function (options) {
-        if (options[1] == null) {
+        if (options[1] === undefined) {
           var output = 'Available programs:<br>';
           for (var cmd in commands) {
             output += '  ' + cmd + '<br>';
@@ -80,7 +126,7 @@ var terminal = function (undefined) {
     whoami: {
       man: 'Describe the currently logged-in user.',
       run: function (options) {
-        return 'User undefined running on Delta Softworks, LLC - Grid09Srv42';
+        return 'Current user: r@ch<br>';
       }
     },
     list: {
@@ -97,68 +143,81 @@ var terminal = function (undefined) {
         return output;
       }
     },
-    go: {
-      man: 'Move to the specified location.<br>Usage: go [path/to/location]<br>Use .. to represent the parent directory; e.g. to go up one directory, type go ..',
-      run: function (options) {
-        if (options[1] !== null) {
-          var path = options[1].split("/");
-
-        } else {
-          return 'Usage: go [path/to/location]';
-        }
-      }
-    },
     open: {
-      man: 'Open a file',
+      man: 'Open a file. Usage: open [filename]',
       run: function (options) {
-        if (options[1] !== null) {
+        if (options[1] !== undefined) {
+          console.log(options[1]);
           if (typeof directories[options[1]] == "string") {
             return directories[options[1]];
           } else {
-            return "File does not exist or is a directory."
+            return "Err: File does not exist or is a directory."
           }
         } else {
           return "Usage: open [filename]"
         }
       }
-    }
+    },
+    install: {
+      man: 'Installs programs. Usage: install [net url of program]',
+      run: function (options) {
+        if ( options[1] && options[1].match("^net://") ) {
+          for (var prog in netCommands) {
+            if (netCommands[prog].net == options[1]) {
+              commands[prog] = netCommands[prog];
+              //installAnimation(options[1]);
+              return 'Installed '+options[1]+'...';
+            }
+          }
+          return 'Err: program not found at specified netloc';
+        } else {
+          return 'Usage: install [net url of program]';
+        }
+      }
+    },
   };
 
   var secretCommands = {
-    invisible: function (options) {
+    go: {
+      man: 'Move to the specified location.<br>Usage: go [path/to/location]<br>Use .. to represent the parent directory; e.g. to go up one directory, type go ..',
+      run: function (options) {
+        if (options[1] !== undefined) {
+          var dest = options[1].split("/");
+          var wd = env.path();
+          return "";
+        } else {
+          return 'Usage: go [path/to/location]';
+        }
+      }
+    },
+  };
 
+  var netCommands = {
+    hypermsg: {
+      net: 'net://af4d:649e:b231/hypermsg',
+      man: 'Read messages in your netbox',
+      run: function (options) {
+        return 'No new messages'
+      }
     }
   };
 
-  var addNote = function (noteBody, removable) {
-    if (removable == undefined || removable == true) {
-      var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
-    } else {
-      var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
+  var env = {
+    wd: "",
+    path: function () {
+      return this.wd.split("/");
     }
-    var noteText = document.createElement('p');
-    noteText.innerHTML = noteBody;
-    note.appendChild(noteText);
-    var rotation = Math.round(Math.random() * 4 - 2);
-    note.style.transform = "rotateZ("+rotation+"deg)";
-    note.style.webkitTransform = "rotateZ("+rotation+"deg)";
-    console.log(note.style);
-
-    note.querySelector('.note-remove').addEventListener('click', function () {
-      this.parentNode.parentNode.removeChild(this.parentNode);
-    });
-    termWrap.appendChild(note);
   };
 
   var directories = {
-    "notes": sep() + "I should really try to write things down more. I forgot that last time I logged onto the Weyland mainframe I nearly lost a program to that GRIM." + sep(),
+    "hyper_readme": sep() + 'To re-install hypermessage:<br>  1. Use the installer program to install hypermsg from net://af4d:649e:b231/hypermsg<br>  2. Verify the installation by typing "hypermsg"' + sep(),
     "documents": {
       "doc": "Testing",
     }
   };
 
   appendInput();
-  addNote('DON\'T FORGET: CHECK MESSAGES', true);
+  addNote('CHECK MESSAGES', true);
 
 };
 
