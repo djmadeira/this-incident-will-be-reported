@@ -1,45 +1,6 @@
 var terminal = function (undefined) {
   "use strict";
 
-  var term = document.getElementById('terminal'),
-      shell,
-      shellInput;
-
-  var commands = {
-    help: {
-      man: 'Displays a full list of programs.',
-      run: function (options) {
-        var output = 'Available programs:<br>';
-        for (var cmd in commands) {
-          output += cmd + '<br>';
-        }
-        return output;
-      }
-    },
-    man: {
-      man: 'Displays information about a program. Usage: man [programname]',
-      run: function (options) {
-        if (options[1] !== undefined && typeof commands[options[1]] == 'object') {
-          return commands[options[1]].man;
-        } else {
-          return 'Usage: man [programname]'
-        }
-      }
-    },
-    whoami: {
-      man: 'Describe the currently logged-in user.',
-      run: function (options) {
-        return 'User undefined running on Delta Softworks, LLC - Grid09Srv42';
-      }
-    }
-  };
-
-  var secretCommands = {
-    invisible: function (options) {
-
-    }
-  }
-
   var appendInput = function () {
     if (document.getElementById('shell') == null) {
       // First-time setup
@@ -75,6 +36,84 @@ var terminal = function (undefined) {
       return commands[tokens[0]].run(tokens);
     } else {
       return 'ERR: Please use a valid command name (hint: try \'help\')';
+    }
+  }
+
+  var sep = function () {
+    return "<hr>";
+  }
+
+  var term = document.getElementById('terminal'),
+      shell,
+      shellInput;
+
+  var commands = {
+    help: {
+      man: 'Displays a full list of programs.',
+      run: function (options) {
+        var output = 'Available programs:<br>';
+        for (var cmd in commands) {
+          output += '  ' + cmd + '<br>';
+        }
+        return output;
+      }
+    },
+    man: {
+      man: 'Displays information about a program. Usage: man [programname]',
+      run: function (options) {
+        if (options[1] !== undefined && typeof commands[options[1]] == 'object') {
+          return commands[options[1]].man;
+        } else {
+          return 'Usage: man [programname]'
+        }
+      }
+    },
+    whoami: {
+      man: 'Describe the currently logged-in user.',
+      run: function (options) {
+        return 'User undefined running on Delta Softworks, LLC - Grid09Srv42';
+      }
+    },
+    list: {
+      man: 'List files in the current directory',
+      run: function (options) {
+        var output = "";
+        for (var file in directories) {
+          if (typeof directories[file] == "string") {
+            output += "File: " + file + "<br>";
+          } else {
+            output += "Dir:  " + file + "<br>";
+          }
+        }
+        return output;
+      }
+    },
+    open: {
+      man: 'Open a file',
+      run: function (options) {
+        if (options[1] !== undefined) {
+          if (typeof directories[options[1]] == "string") {
+            return directories[options[1]];
+          } else {
+            return "File does not exist or is a directory."
+          }
+        } else {
+          return "Usage: open [filename]"
+        }
+      }
+    }
+  };
+
+  var secretCommands = {
+    invisible: function (options) {
+
+    }
+  }
+
+  var directories = {
+    "notes": sep() + "I should really try to write things down more. I forgot that last time I logged onto the Weyland mainframe I nearly lost a program to that GRIM." + sep(),
+    "documents": {
+      "doc": "Testing",
     }
   }
 
