@@ -14,11 +14,14 @@
     .terminal {
       max-width: 800px;
       height: 40em;
+      background: #111;
       margin: 0 auto;
       margin-top: 2em;
-      padding: 0 4px;
-      cursor:none;
+      padding: 1em;
       overflow-y:scroll;
+      border: 20px solid;
+      border-color: #323232 #444444 #525252;
+      box-shadow: inset 0 0 40px rgba(0,0,0, 1);
     }
     .shell input {
       -webkit-appearance: none;
@@ -31,14 +34,15 @@
       width:90%;
       font-family: 'Courier New', Courier, monospace, sans-serif;
     }
+    .shell-line {
+      white-space:pre-wrap;
+      margin-left: 0.6em;
+    }
     ::-webkit-scrollbar {
-      width:4px;
+      display:none;
     }
-    ::-webkit-scrollbar-track {
-      background: #222;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #666;
+    ::selection {
+      background-color: #54F900;
     }
   </style>
   <template id="shell-template">
