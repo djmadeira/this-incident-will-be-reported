@@ -59,7 +59,7 @@ var terminal = function () {
     return "<hr>";
   };
 
-  var addNote = function (noteBody, removable) {
+  addNote = function (noteBody, removable) {
     if (removable == undefined || removable == true) {
       var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
     } else {
@@ -159,14 +159,14 @@ var terminal = function () {
       }
     },
     install: {
-      man: 'Installs programs. Usage: install [net url of program]',
+      man: 'Installs programs. Usage: install [netloc of program]',
       run: function (options) {
         if ( options[1] && options[1].match("^net://") ) {
           for (var prog in netCommands) {
             if (netCommands[prog].net == options[1]) {
               commands[prog] = netCommands[prog];
               //installAnimation(options[1]);
-              return 'Installed '+options[1]+'...';
+              return 'Installed '+options[1];
             }
           }
           return 'Err: program not found at specified netloc';
@@ -195,9 +195,45 @@ var terminal = function () {
   var netCommands = {
     hypermsg: {
       net: 'net://af4d:649e:b231/hypermsg',
-      man: 'Read messages in your netbox',
+      man: 'Read messages in your netbox.<br>Usage:<br>hypermsg (list all messages)<br>hypermsg read [msgid]',
+      messages: {
+        '01': {
+          author: 'LaKellz',
+          date: '2031-02-14',
+          title: 'Hey r',
+          msg: 'Heard about your rig. Sux. Net me later, K? I have a job you might be interested in.'
+        },
+        '02': {
+          author: 'LaKellz',
+          date: '2031-02-13',
+          title: 'Your recent hardware failure',
+          msg: 'It has come to the attention of Raidman Warez Inc. that you have experienced a fault while using one of our products.<br><br>While we deeply regret this, records recovered from the logchip in your Raidman Warez Embed&trade; show that the device was being overclocked at the time of failure.<br><br>This is a voilation of the warranty, and as a result we cannot refund or replace your hardware purchase.<br><br>We apologize for any inconvenience.<script>addNote("Reminder: get cash from Uncle Al for hardware replacements");</script>'
+        },
+      },
       run: function (options) {
-        return 'No new messages'
+        if (options[1] == undefined) {
+          return this.allMsg();
+        } else if (options[1] == 'read' && this.messages[options[2]]) {
+          return sep() + "<strong>Message: "+ this.messages[options[2]].title + "</strong><br>" + this.messages[options[2]].msg;
+        } else {
+          return 'Usage: hypermsg read [msg id]'
+        }
+      },
+      allMsg: function () {
+                         //0    5           17            30
+        var output = sep()+'<strong>ID  Date        Author        Title</strong><br>';
+        for (var msg in this.messages) {
+          var row = msg + '  ' + this.messages[msg].date + '  ' + this.messages[msg].author + this.spc(this.messages[msg].author.length, 14) + this.messages[msg].title + '<br>';
+          output += row;
+        }
+        return output;
+      },
+      spc: function (length, space) {
+        var output = '';
+        for (var i=0; i<space-length; i++) {
+          output += ' ';
+        }
+        return output;
       }
     }
   };
@@ -206,19 +242,18 @@ var terminal = function () {
     wd: "",
     path: function () {
       return this.wd.split("/");
-    }
+    },
   };
 
   var directories = {
-    "hyper_readme": sep() + 'To re-install hypermessage:<br>  1. Use the installer program to install hypermsg from net://af4d:649e:b231/hypermsg<br>  2. Verify the installation by typing "hypermsg"' + sep(),
+    "hyper_readme": sep() + 'To re-install hypermessage:<br>  1. Use the installer program to install hypermsg from net://af4d:649e:b231/hypermsg<br>  2. Verify the installation by typing "hypermsg"',
     "documents": {
       "doc": "Testing",
     }
   };
 
   appendInput();
-  addNote('CHECK MESSAGES', true);
-
+  addNote('CHECK MESSAGES');
 };
 
 requestAnimationFrame(terminal);
