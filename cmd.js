@@ -31,6 +31,7 @@ var terminal = function (undefined) {
   }
 
   var parseInput = function (input) {
+    input = input.toLowerCase();
     var tokens = input.split(' ');
     if (typeof commands[tokens[0]] == 'object') {
       return commands[tokens[0]].run(tokens);
@@ -49,22 +50,21 @@ var terminal = function (undefined) {
 
   var commands = {
     help: {
-      man: 'Displays a full list of programs.',
+      man: 'Displays information about installed programs, or lists all programs if none is supplied.',
       run: function (options) {
-        var output = 'Available programs:<br>';
-        for (var cmd in commands) {
-          output += '  ' + cmd + '<br>';
-        }
-        return output;
-      }
-    },
-    man: {
-      man: 'Displays information about a program. Usage: man [programname]',
-      run: function (options) {
-        if (options[1] !== undefined && typeof commands[options[1]] == 'object') {
-          return commands[options[1]].man;
+        if (options[1] == null) {
+          var output = 'Available programs:<br>';
+          for (var cmd in commands) {
+            output += '  ' + cmd + '<br>';
+          }
+          output += 'To learn more about a program, type help [programname]';
+          return output;
         } else {
-          return 'Usage: man [programname]'
+          if (typeof commands[options[1]] == 'object') {
+            return options[1] + ': ' + commands[options[1]].man;
+          } else {
+            return 'Program not found: ' + options[1];
+          }
         }
       }
     },
@@ -91,7 +91,7 @@ var terminal = function (undefined) {
     open: {
       man: 'Open a file',
       run: function (options) {
-        if (options[1] !== undefined) {
+        if (options[1] !== null) {
           if (typeof directories[options[1]] == "string") {
             return directories[options[1]];
           } else {
