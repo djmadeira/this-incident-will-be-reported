@@ -1,0 +1,59 @@
+<head>
+  <script src="cmd.js"></script>
+  <style>
+    *, *:before, *:after {
+      box-sizing:border-box;
+    }
+    body {
+      font-size:14px;
+      background: #010101;
+      color: #fff;
+      margin:0;
+      font-family: 'Courier New', Courier, monospace, sans-serif;
+    }
+    .terminal {
+      max-width: 800px;
+      height: 40em;
+      margin: 0 auto;
+      margin-top: 2em;
+      padding: 0 4px;
+      cursor:none;
+      overflow-y:scroll;
+    }
+    .shell input {
+      -webkit-appearance: none;
+      background: transparent;
+      outline:none;
+      border:none;
+      color: #fff;
+      font-size:1em;
+      display:inline-block;
+      width:90%;
+      font-family: 'Courier New', Courier, monospace, sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width:4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #222;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #666;
+    }
+  </style>
+  <template id="shell-template">
+    <div class="shell" id="shell">
+      $ <input id="shell-input" type="text" autofocus spellcheck="false" autocomplete="false">
+    </div>
+  </template>
+  <template id="shell-line-template">
+    <div class="shell-line"></div>
+  </template>
+</head>
+<body>
+  <div id="terminal" class="terminal">
+  </div>
+  <noscript>
+    Sorry, you need JavaScript enabled to activate this terminal.
+  </noscript>
+</body>
