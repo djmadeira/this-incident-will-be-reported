@@ -1,0 +1,96 @@
+*, *:before, *:after {
+  box-sizing: border-box; }
+
+body {
+  font-size: 16px;
+  line-height: 1.2;
+  background: black url("bg.jpg") no-repeat top center;
+  color: #fff;
+  margin: 0;
+  font-family: Courier, monospace, sans-serif; }
+
+body.dragging ::selection {
+  background-color: transparent; }
+
+template {
+  visibility: hidden;
+  /* fallback */ }
+
+.wrap {
+  background: url("monitor.jpg") no-repeat top left;
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  height: 50%;
+  padding: 60px 50px; }
+
+.terminal {
+  width: 100%;
+  height: 100%;
+  background: #111;
+  color: #EFF6FF;
+  padding: 1em;
+  overflow-y: scroll; }
+
+.shell input {
+  -webkit-appearance: none;
+  background: transparent;
+  outline: none;
+  border: none;
+  color: inherit;
+  font-size: 1em;
+  display: inline-block;
+  width: 90%;
+  font-family: inherit; }
+
+.shell-line {
+  white-space: pre-wrap;
+  margin-left: 0.6em; }
+
+.note {
+  font-family: 'Nothing You Could Do', cursive;
+  position: absolute;
+  top: 103%;
+  right: 50%;
+  margin-right: -45%;
+  transform: rotateZ(-1deg);
+  -webkit-transform: rotateZ(-1deg);
+  background: linear-gradient(to top, #fff6d0, #f3eac6);
+  color: #000;
+  padding: 0.5em;
+  width: 90vw;
+  max-width: 14em;
+  min-height: 8em;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8); }
+
+.note .note-remove {
+  position: relative;
+  color: #000;
+  text-decoration: none;
+  font-size: 2em;
+  float: right;
+  top: -0.5em; }
+
+.note p {
+  margin-bottom: 0; }
+
+hr {
+  border-color: #46D300; }
+
+::-webkit-scrollbar {
+  display: none; }
+
+::selection {
+  background-color: #54F900;
+  color: #fff; }
+
+@media only screen and (min-width: 800px) {
+  .wrap {
+    height: 600px;
+    margin-top: 100px; } }
+@media only screen and (min-width: 1200px) {
+  .note {
+    top: 20%;
+    right: 85%;
+    margin: 0; } }

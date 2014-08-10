@@ -78,7 +78,7 @@ var terminal = function () {
     note.style.webkitTransform = "rotateZ("+rotation+"deg)";
 
     note.addEventListener('mousedown', function (event) {
-      playSound('stickyremove.mp3', 'fg', 0.5, false);
+      playSound('stickyremove.mp3', 'fg', 0.1, false);
       clickX = event.x;
       clickY = event.y;
       window.addEventListener('mousemove', draggable);
@@ -106,28 +106,6 @@ var terminal = function () {
     var transValue = "translateX(" + (e.x - clickX + (dragOffsetX ? dragOffsetX : 0)) + "px) translateY(" + (e.y - clickY + (dragOffsetY ? dragOffsetY : 0)) + "px)";
     dragTarget.style.transform = transValue;
     dragTarget.style.webkitTransform = transValue;
-  };
-
-  var installAnimation = function (url) {
-    var progressText = 'Progress: 0%';
-    var outputWrap = document.getElementById('shell-line-template').content.cloneNode(true);
-    currentId = 'uniqueid'+ (parseInt(currentId.charAt(8)) + 1);
-    outputWrap.querySelector('.shell-line').id = currentId;
-    outputWrap.querySelector('.shell-line').innerHTML = progressText;
-    term.appendChild(outputWrap);
-    appendInput();
-    window.setTimeout(installAnimRep, 50);
-  };
-
-  var installAnimRep = function () {
-    var div = document.getElementById(currentId);
-    var inner = div.innerHTML;
-    var progress = parseInt(inner.match(/Progress\: (\d{1,2})\%/)[0]);
-    if (progress >= 100) {
-      return;
-    }
-    div.innerHTML = inner.replace(/Progress\: ([0-9]{1,2})/, progress + 10);
-    window.setTimeout(installAnimRep, 50);
   };
 
   var playSound = function (url, layer, vol, loop) {
