@@ -3,3 +3,7 @@ Copyright 2014 DJ Madeira.
 You can do whatever you want with this, as long as you share whatever you make.
 
 https://creativecommons.org/licenses/by-sa/3.0/
+
+Used in project:
+http://freesound.org/people/FreddyFool/sounds/207807
+http://freesound.org/people/Ignitor/sounds/182575/

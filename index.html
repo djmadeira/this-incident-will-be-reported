@@ -10,10 +10,13 @@
     body {
       font-size:14px;
       line-height: 1.2;
-      background: #010101;
+      background: #0f0c06;
       color: #fff;
       margin:0;
       font-family: 'Courier New', Courier, monospace, sans-serif;
+    }
+    body.dragging ::selection {
+      background-color: transparent;
     }
     template {
       visibility:hidden; /* fallback */
@@ -23,18 +26,22 @@
       max-width: 800px;
       margin: 0 auto;
       height: 50%;
+      padding: 4em;
+      background: linear-gradient(to top left, #644B2F, #664B37);
+      border: 6px solid;
+      border-color: #141008 #a77b4c #4b361f #0d0706;
+      border-radius: 6px;
     }
     .terminal {
       width:100%;
       height:100%;
+      background: #111;
       color: #46D300;
-      background: linear-gradient(to top, #0E100F, #1C211F);
       padding: 1em;
       overflow-y:scroll;
-      border: 20px solid;
-      border-color: #323232 #444444 #525252;
-      box-shadow: inset 0 0 40px rgba(0,0,0, 1);
-      border-radius: 3px;
+      border-radius:2px;
+      border:4px solid;
+      border-color: #412e18 #231a0f #241b0f #2a1e10;
     }
     .shell {
     }
@@ -67,6 +74,8 @@
       width: 90vw;
       max-width:14em;
       min-height: 8em;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.8);
     }
     .note .note-remove {
       position:relative;
@@ -92,15 +101,13 @@
     @media only screen and (min-width: 800px) {
       .wrap {
         height:40em;
-      }
-      .terminal {
         margin-top: 2em;
       }
     }
     @media only screen and (min-width: 1200px) {
       .note {
-        top:10%;
-        right:103%;
+        top:20%;
+        right:85%;
         margin:0;
       }
     }
@@ -128,6 +135,12 @@
     <div id="terminal" class="terminal">
     </div>
   </div>
+  <audio id="music-bg" loop>
+    <source></source>
+  </audio>
+  <audio id="music-fg" loop>
+    <source></source>
+  </audio>
   <noscript>
     Sorry, you need JavaScript enabled to activate this terminal.
   </noscript>

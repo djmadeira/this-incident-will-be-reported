@@ -10,7 +10,12 @@ var terminal = function () {
       shellInput,
       noteTemplate = document.getElementById('note-template'),
       noteRemovableTemplate = document.getElementById('note-removeable-template'),
-      currentId = 'uniqueid0';
+      currentId = 'uniqueid0',
+      clickX,
+      clickY,
+      dragOffsetX,
+      dragOffsetY,
+      dragTarget;
 
   var appendInput = function () {
     if (document.getElementById('shell') == null) {
@@ -59,7 +64,7 @@ var terminal = function () {
     return "<hr>";
   };
 
-  addNote = function (noteBody, removable) {
+  var addNote = function (noteBody, removable) {
     if (removable == undefined || removable == true) {
       var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
     } else {
@@ -72,12 +77,35 @@ var terminal = function () {
     note.style.transform = "rotateZ("+rotation+"deg)";
     note.style.webkitTransform = "rotateZ("+rotation+"deg)";
 
+    note.addEventListener('mousedown', function (event) {
+      playSound('stickyremove.mp3', 'fg', 0.5, false);
+      clickX = event.x;
+      clickY = event.y;
+      window.addEventListener('mousemove', draggable);
+      dragTarget = this;
+      document.body.classList.add('dragging');
+    });
+    note.addEventListener('mouseup', function () {
+      clickX = undefined;
+      clickY = undefined;
+      dragOffsetX = parseInt(this.style.transform.match(/translateX\((-?[0-9]{1,})px\)/)[1]);
+      dragOffsetY = parseInt(this.style.transform.match(/translateY\((-?[0-9]{1,})px\)/)[1]);
+      window.removeEventListener('mousemove', draggable);
+      document.body.classList.remove('dragging');
+    });
+
     note.querySelector('.note-remove').addEventListener('click', function () {
       this.parentNode.parentNode.removeChild(this.parentNode);
       shellInput.focus();
     });
     termWrap.appendChild(note);
 
+  };
+
+  var draggable = function (e) {
+    var transValue = "translateX(" + (e.x - clickX + (dragOffsetX ? dragOffsetX : 0)) + "px) translateY(" + (e.y - clickY + (dragOffsetY ? dragOffsetY : 0)) + "px)";
+    dragTarget.style.transform = transValue;
+    dragTarget.style.webkitTransform = transValue;
   };
 
   var installAnimation = function (url) {
@@ -94,13 +122,26 @@ var terminal = function () {
   var installAnimRep = function () {
     var div = document.getElementById(currentId);
     var inner = div.innerHTML;
-    console.log(inner);
     var progress = parseInt(inner.match(/Progress\: (\d{1,2})\%/)[0]);
     if (progress >= 100) {
       return;
     }
     div.innerHTML = inner.replace(/Progress\: ([0-9]{1,2})/, progress + 10);
     window.setTimeout(installAnimRep, 50);
+  };
+
+  var playSound = function (url, layer, vol, loop) {
+    if (layer == 'bg') {
+      var playing = document.getElementById('music-bg');
+      playing.querySelector('source').src = url;
+    } else {
+      var playing = document.getElementById('music-fg');
+      playing.querySelector('source').src = url;
+    }
+    playing.loop = loop ? true : false;
+    playing.volume = vol || 1;
+    playing.load();
+    playing.play();
   }
 
   var commands = {
@@ -147,7 +188,6 @@ var terminal = function () {
       man: 'Open a file. Usage: open [filename]',
       run: function (options) {
         if (options[1] !== undefined) {
-          console.log(options[1]);
           if (typeof directories[options[1]] == "string") {
             return directories[options[1]];
           } else {
@@ -207,7 +247,7 @@ var terminal = function () {
           author: 'LaKellz',
           date: '2031-02-13',
           title: 'Your recent hardware failure',
-          msg: 'It has come to the attention of Raidman Warez Inc. that you have experienced a fault while using one of our products.<br><br>While we deeply regret this, records recovered from the logchip in your Raidman Warez Embed&trade; show that the device was being overclocked at the time of failure.<br><br>This is a voilation of the warranty, and as a result we cannot refund or replace your hardware purchase.<br><br>We apologize for any inconvenience.<script>addNote("Reminder: get cash from Uncle Al for hardware replacements");</script>'
+          msg: 'It has come to the attention of Raidman Warez Inc. that you have experienced a fault while using one of our products.<br><br>While we deeply regret this, records recovered from the logchip in your Raidman Warez Embed&trade; show that the device was being overclocked at the time of failure.<br><br>This is a voilation of the warranty, and as a result we cannot refund or replace your hardware purchase.<br><br>We apologize for any inconvenience.'
         },
       },
       run: function (options) {
@@ -254,6 +294,7 @@ var terminal = function () {
 
   appendInput();
   addNote('CHECK MESSAGES');
+  //playSound('bg-ambient.mp3', 'bg', 0.1, true);
 };
 
 requestAnimationFrame(terminal);
