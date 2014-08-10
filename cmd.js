@@ -73,12 +73,9 @@ var terminal = function () {
     var noteText = document.createElement('p');
     noteText.innerHTML = noteBody;
     note.appendChild(noteText);
-    var rotation = Math.round(Math.random() * 4 - 2);
-    note.style.transform = "rotateZ("+rotation+"deg)";
-    note.style.webkitTransform = "rotateZ("+rotation+"deg)";
 
     note.addEventListener('mousedown', function (event) {
-      playSound('stickyremove.mp3', 'fg', 0.1, false);
+      playSound('stickyremove.mp3', 'fg', 0.2, false);
       clickX = event.x;
       clickY = event.y;
       window.addEventListener('mousemove', draggable);
