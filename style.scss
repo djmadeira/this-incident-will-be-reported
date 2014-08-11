@@ -1,7 +1,4 @@
-$monitor: #C5B393;
-$monitor-light: #F0DBB6;
-$monitor-dark: #837661;
-$monitor-verydark: #534B3C;
+$term-color: #EFF6FF;
 
 *, *:before, *:after {
   box-sizing:border-box;
@@ -13,9 +10,6 @@ body {
   color: #fff;
   margin:0;
   font-family: Courier, monospace, sans-serif;
-}
-body.dragging ::selection {
-  background-color: transparent;
 }
 template {
   visibility:hidden; /* fallback */
@@ -31,7 +25,7 @@ template {
 .terminal {
   width:100%;
   height:100%;
-  color: #EFF6FF;
+  color: $term-color;
   padding: 1em;
   overflow-y:scroll;
 }
@@ -79,7 +73,7 @@ template {
   margin-bottom: 0;
 }
 hr {
-  border-color: #46D300;
+  border-color: $term-color;
 }
 ::-webkit-scrollbar {
   display:none;
