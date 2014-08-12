@@ -1,6 +1,52 @@
 /**
-  *
+  * Way to view source bro/sis! Here's a rundown of how it works:
+  * derp derp hax quick solution half-assed thing derp herp derp.
+  * Don't look, unless you were looking for a manual on how *not* to write code.
 **/
+
+/*
+App
+  dom  template // the template for the terminal
+  dom  lntemplate // the template for a new line
+  bool debug // whether debugging or not
+  obj  installed // installed programs (accessable by player)
+  obj  notes // Currently displayed notes
+  obj  err // key: values for errors of a certain type. Regex for %1 etc to replace if needed
+  func gtById (str id) : dom id || null // alias for document.getelementbyid
+  func log (msg) : null // alias for console.log (if debug flag enabled)
+  func parseInput (str input) : // sanitize input and check if it matches an installed program. If it does, call that program's run method with a callback to add the input back to the end.
+  func replace (str message, str ...) : str // replace the placeholders in the string with the additional variables supplied. Won't do anything when too many variables are supplied.
+  func loadSound (id, url, cb) : null // get a sound ready to play (executes the cb when ready to play)
+  func playSound (id, url, vol, looping) : null // play a sound. If it doesn't exist, load it automatically
+  func pauseSound (id) : null // pause a playing sound
+  func fitIn (str text, int length) : str the text fit inside the space. If it overflows, replace the last characters with ellipsis. If it it's smaller, add spaces to fill the char #.
+  func getTemplate (str id) : dom the HTML of the template // polyfill browsers that don't support templates.
+
+Program
+  str  lastWriteId : str id of the last ln we created
+  func newln () : str id to write to
+  func run (args, cb) : null // executes cb when finished
+  func cleanArgs (args) : array cleaned up args for use when running program
+    help
+    whoami
+    list
+    go
+    open
+    install
+    hypermsg
+
+File
+  str  parent : the file's parent
+  str
+  str  type : str file/folder // may add more types, not sure
+  func access (options, cb) : array || str // returns a string with the contents of the file or an array of the children if it's a directory. Maybe accepts options, depending on the thing
+
+Note
+  int  lastX & lastY // last place that it was dropped (needed to keep dragging working)
+  str  content // the content of the string
+  func drag () : // move the note around
+  func remove () : null // remove the note from the screen
+*/
 
 var terminal = function () {
   "use strict";
