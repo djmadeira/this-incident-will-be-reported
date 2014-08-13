@@ -9,9 +9,6 @@ body {
   margin: 0;
   font-family: Courier, monospace, sans-serif; }
 
-body.dragging ::selection {
-  background-color: transparent; }
-
 template {
   visibility: hidden;
   /* fallback */ }
@@ -27,7 +24,7 @@ template {
 .terminal {
   width: 100%;
   height: 100%;
-  color: #EFF6FF;
+  color: #eff6ff;
   padding: 1em;
   overflow-y: scroll; }
 
@@ -41,6 +38,9 @@ template {
   display: inline-block;
   width: 90%;
   font-family: inherit; }
+  .shell input:before {
+    display: inline;
+    content: "$"; }
 
 .shell-line {
   white-space: pre-wrap;
@@ -73,7 +73,7 @@ template {
   margin-bottom: 0; }
 
 hr {
-  border-color: #46D300; }
+  border-color: #eff6ff; }
 
 ::-webkit-scrollbar {
   display: none; }

@@ -4,22 +4,28 @@
   <script src="cmd.js"></script>
   <link href='http://fonts.googleapis.com/css?family=Nothing+You+Could+Do' rel='stylesheet' type='text/css'>
   <link href='style.css' rel='stylesheet' type='text/css'>
-  <template id="shell-template">
+  <template id="input-template">
     <div class="shell" id="shell">
-      $ <input id="shell-input" type="text" autofocus spellcheck="false" autocomplete="false">
+      $ <input id="input" type="text" autofocus spellcheck="false" autocomplete="false">
     </div>
   </template>
-  <template id="shell-line-template">
-    <div class="shell-line"></div>
+  <template id="ln-template">
+    <div class="shell-ln"></div>
   </template>
-  <template id="note-removeable-template">
+  <template id="note-rm-template">
     <div class="note">
-      <a class="note-remove" href="#">x</a>
+      <a class="note-rm" href="#">x</a>
     </div>
   </template>
   <template id="note-template">
     <div class="note">
     </div>
+  </template>
+  <template id="sound-template">
+    <audio class="sound">
+      <source type="audio/mp4"></source>
+      <source type="audio/ogg"></source>
+    </audio>
   </template>
 </head>
 <body>
@@ -27,12 +33,6 @@
     <div id="terminal" class="terminal">
     </div>
   </div>
-  <audio id="music-bg" loop>
-    <source></source>
-  </audio>
-  <audio id="music-fg" loop>
-    <source></source>
-  </audio>
   <noscript>
     Sorry, you need JavaScript enabled to activate this terminal.
   </noscript>

@@ -29,8 +29,6 @@ template {
   padding: 1em;
   overflow-y:scroll;
 }
-.shell {
-}
 .shell input {
   -webkit-appearance: none;
   background: transparent;
@@ -41,6 +39,10 @@ template {
   display:inline-block;
   width:90%;
   font-family: inherit;
+  &:before {
+    display:inline;
+    content: "$";
+  }
 }
 .shell-line {
   white-space:pre-wrap;

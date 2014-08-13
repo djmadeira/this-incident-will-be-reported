@@ -6,21 +6,21 @@
 
 /*
 App
-  dom  template // the template for the terminal
-  dom  lntemplate // the template for a new line
-  bool debug // whether debugging or not
-  obj  installed // installed programs (accessable by player)
-  obj  notes // Currently displayed notes
-  obj  err // key: values for errors of a certain type. Regex for %1 etc to replace if needed
-  func gtById (str id) : dom id || null // alias for document.getelementbyid
-  func log (msg) : null // alias for console.log (if debug flag enabled)
-  func parseInput (str input) : // sanitize input and check if it matches an installed program. If it does, call that program's run method with a callback to add the input back to the end.
-  func replace (str message, str ...) : str // replace the placeholders in the string with the additional variables supplied. Won't do anything when too many variables are supplied.
-  func loadSound (id, url, cb) : null // get a sound ready to play (executes the cb when ready to play)
+  -dom  template // the template for the terminal
+  -dom  lntemplate // the template for a new line
+  -bool debug // whether debugging or not
+  -obj  installed // installed programs (accessable by player)
+  -obj  notes // Currently displayed notes
+  -obj  err // key: values for errors of a certain type. Regex for %1 etc to replace if needed
+  -func gtById (str id) : dom id || null // alias for document.getelementbyid
+  -func log (msg) : null // alias for console.log (if debug flag enabled)
+  -func parseInput (str input) : // sanitize input and check if it matches an installed program. If it does, call that program's run method with a callback to add the input back to the end.
+  -func replace (str message, str ...) : str // replace the placeholders in the string with the additional variables supplied. Won't do anything when too many variables are supplied.
+  -func loadSound (id, url, cb) : null // get a sound ready to play (executes the cb when ready to play)
   func playSound (id, url, vol, looping) : null // play a sound. If it doesn't exist, load it automatically
   func pauseSound (id) : null // pause a playing sound
-  func fitIn (str text, int length) : str the text fit inside the space. If it overflows, replace the last characters with ellipsis. If it it's smaller, add spaces to fill the char #.
-  func getTemplate (str id) : dom the HTML of the template // polyfill browsers that don't support templates.
+  -func fitIn (str text, int length) : str the text fit inside the space. If it overflows, replace the last characters with ellipsis. If it it's smaller, add spaces to fill the char #.
+  -func getTemplate (str id) : dom the HTML of the template // polyfill browsers that don't support templates.
 
 Program
   str  lastWriteId : str id of the last ln we created
@@ -47,6 +47,133 @@ Note
   func drag () : // move the note around
   func remove () : null // remove the note from the screen
 */
+
+var app = function () {
+
+  // --------------- Util Functions --------------- //
+
+  // getElementById wrapper
+  var gtById = function (id) {
+    return document.getElementById(id);
+  };
+
+  // console.log wrapper
+  var log = function (msg) {
+    if ( debug ) { console.log(msg); }
+  };
+
+  // Gets a template (with a "polyfill" lol not)
+  var getTemplate = function (id) {
+    var template = gtById(id);
+    if ( ! template ) { return false; }
+    if ( template.content ) {
+      return template.content.cloneNode(true);
+    } else {
+      return template.firstChild.cloneNode(true);
+    }
+  };
+
+  // Generate a unique, hexy ID (move that hexy bod grrl)
+  var uniqueId = function uniqueId () {
+    var id = '';
+        length = 16, // hnnnng so hexy
+        chars = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+    for (var i=0; i < length; i++) {
+      id += chars[Math.floor(Math.random() * 16)];
+    }
+    if ( gtById(id) ) {
+      return uniqueId(); // recursive hnnnng
+    } else {
+      return id;
+    }
+  };
+
+  // ---------------- Variables ------------------- //
+
+  var inputTemplate = getTemplate('input-template'), // Template for the input
+      lnTemplate = getTemplate('ln-template'), // Template for a new line
+      term = gtById('terminal'), // The terminal in the DOM. This shouldn't go anywhere, so this won't have to be updated.
+      debug = true,
+      installed = {},
+      notes = [],
+      errorMsgs = {};
+
+  // -------------- Base Functions ---------------- //
+
+  var init = function () {
+    appendInput();
+    gtById('input').focus();
+    var out = appendOutput();
+    out.innerHTML = 'Welcome!';
+    appendInput();
+  };
+
+  // When called, gets input from the field (if any) and calls the appropriate program, passing it token-ized arguments.
+  var parseInput = function (input) {
+    inputEl = gtById('input');
+    input = inputEl.value;
+    if (input) {
+      var tokens = input.split(' ');
+      if ( installed[tokens[0]] ) {
+        installed[tokens[0]]
+      } else {
+        log('oops');
+      }
+    }
+  };
+
+  // Appends a new output div with a unique ID. Returns a reference to the DOM node for further manipulation.
+  var appendOutput = function () {
+    var ln = lnTemplate.querySelector('.shell-ln'),
+        id = uniqueId();
+    gtById('shell').parentNode.removeChild(gtById('shell'));
+    ln.id = id;
+    term.appendChild(ln);
+    return ln;
+  }
+
+  // Usually called from the callback for programs; gives the user input ability after programs are finished running.
+  var appendInput = function () {
+    inputTemplate = getTemplate('input-template');
+    term.appendChild(inputTemplate);
+  };
+
+  // Replace the keywords in a string, similar to PHP's `sprintf`.
+  var keywordReplace = function (string, values) {
+    var values = values || {}, i=1;
+    for (var val in values) {
+      string = string.replace('%'+i, val);
+    }
+    return string;
+  };
+
+  var fitInStr = function (str, length) {
+    if ( str.length > length && str.charAt(str.length - 1) !== ' ' ) { // Watch that trailing space
+      // Put a .. on the end to show it trailing off if it's too long
+      return str.substr(str.length - 3, 2) + '..';
+    } else {
+      // Lengthen the string with ' ' until it meets the number of characters required
+      var whitespace = " ";
+      while ( whitespace.length < length - str.length ) { whitespace += " " };
+      return str.contat(whitespace);
+    }
+  };
+
+  // Sound "engine". Collection of functions for loading, playing and pausing sounds. Can also interrupt sounds.
+  var loadSound = function (id, url, cb) {
+    if ( gtById(id) ) { cb(id); return; }
+
+    cb(id);
+  };
+
+  init();
+};
+
+
+window.requestAnimationFrame(app);
+
+
+/* Old crappy code --------------------------------------------------------------------------------------------------
 
 var terminal = function () {
   "use strict";
@@ -150,20 +277,6 @@ var terminal = function () {
     dragTarget.style.transform = transValue;
     dragTarget.style.webkitTransform = transValue;
   };
-
-  var playSound = function (url, layer, vol, loop) {
-    if (layer == 'bg') {
-      var playing = document.getElementById('music-bg');
-      playing.querySelector('source').src = url;
-    } else {
-      var playing = document.getElementById('music-fg');
-      playing.querySelector('source').src = url;
-    }
-    playing.loop = loop ? true : false;
-    playing.volume = vol || 1;
-    playing.load();
-    playing.play();
-  }
 
   var commands = {
     help: {
@@ -318,4 +431,4 @@ var terminal = function () {
   //playSound('bg-ambient.mp3', 'bg', 0.1, true);
 };
 
-requestAnimationFrame(terminal);
+requestAnimationFrame(terminal); */
