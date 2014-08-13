@@ -4,7 +4,7 @@
 body {
   font-size: 18px;
   line-height: 1.2;
-  background: black url("bg.jpg") no-repeat top center;
+  background: black url("img/bg.jpg") no-repeat top center;
   color: #fff;
   margin: 0;
   font-family: Courier, monospace, sans-serif; }
@@ -14,7 +14,7 @@ template {
   /* fallback */ }
 
 .wrap {
-  background: url("monitor.jpg") no-repeat top left;
+  background: url("img/monitor.jpg") no-repeat top left;
   position: relative;
   max-width: 800px;
   margin: 0 auto;

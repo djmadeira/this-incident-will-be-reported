@@ -6,7 +6,7 @@ $term-color: #EFF6FF;
 body {
   font-size:18px;
   line-height: 1.2;
-  background: #000 url('bg.jpg') no-repeat top center;
+  background: #000 url('img/bg.jpg') no-repeat top center;
   color: #fff;
   margin:0;
   font-family: Courier, monospace, sans-serif;
@@ -15,7 +15,7 @@ template {
   visibility:hidden; /* fallback */
 }
 .wrap {
-  background: url('monitor.jpg') no-repeat top left;
+  background: url('img/monitor.jpg') no-repeat top left;
   position:relative;
   max-width: 800px;
   margin: 0 auto;

@@ -167,8 +167,29 @@ var app = function () {
   };
 
   init();
+
+
+  var getData = function (query, cb) {
+    var request = new XMLHttpRequest ();
+    request.onload = cb;
+    request.open('get', window.location.href + 'get.php?' + query, true);
+    request.send();
+  };
+
+  var saveState = function () {
+    log( JSON.stringify( gameState ) );
+  };
+
+  saveState();
 };
 
+var gameState = {
+  programs: {
+    open: {
+      name: 'open'
+    }
+  }
+};
 
 window.requestAnimationFrame(app);
 
