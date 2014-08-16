@@ -44,7 +44,7 @@ template {
     display: inline;
     content: "$"; }
 
-.shell-line {
+.shell-ln {
   white-space: pre-wrap;
   margin-left: 0.6em; }
 

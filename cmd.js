@@ -48,6 +48,13 @@ File
   -func remove () : null // remove the note from the screen
 */
 
+// ------------- Boring Polyfills --------------- //
+window.requestAnimationFrame = window.requestAnimationFrame ||
+  window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
+  function (func) {
+    window.setTimeout(func, 33); // 30 FPS
+  };
+
 var app = function () {
   var inputTemplate, // Template for the input
       lnTemplate, // Template for a new line
@@ -120,17 +127,19 @@ var app = function () {
     var val = input.value;
     if (val) {
       var tokens = val.split(' ');
-      if ( installed[tokens[0]] ) {
-        installed[tokens[0]]
+      if ( state[tokens[0]] ) {
+        state[tokens[0]].run(tokens);
       } else {
-        log('oops');
+        var lnout = appendOutput();
+        lnout.innerHTML = err.cmdNotFound;
+        focusInput();
       }
     }
   };
 
   // Appends a new output div with a unique ID. Returns a reference to the DOM node for further manipulation.
   var appendOutput = function () {
-    var ln = lnTemplate.querySelector('.shell-ln'),
+    var ln = lnTemplate.querySelector('.shell-ln').cloneNode(true),
         id = uniqueId();
     gtById('shell').parentNode.removeChild(gtById('shell'));
     ln.id = id;
@@ -169,14 +178,14 @@ var app = function () {
   };
 
   var fitInStr = function (str, length) {
-    if ( str.length > length && str.charAt(str.length - 1) !== ' ' ) { // Watch that trailing space
+    if ( str.length > length ) {
       // Put a .. on the end to show it trailing off if it's too long
-      return str.substr(str.length - 3, 2) + '..';
+      return str.substring(0, str.length - 2) + '..';
     } else {
       // Lengthen the string with ' ' until it meets the number of characters required
       var whitespace = " ";
       while ( whitespace.length < length - str.length ) { whitespace += " " };
-      return str.contat(whitespace);
+      return str + whitespace;
     }
   };
 
@@ -195,7 +204,7 @@ var app = function () {
   };
 
   var saveGame = function () {
-    log( JSON.stringify( gameState ) );
+    alert( JSON.stringify( gameState ) );
   };
 
   var loadGame = function () {
@@ -214,12 +223,13 @@ var app = function () {
 
     var id = uniqueId();
 
+    that.dragClickX = 0;
+    that.dragClickY = 0;
+    that.dragOffsetX = 0;
+    that.dragOffsetY = 0;
+
     that.display = function () {
       var note = template.querySelector('.note');
-      window[my.name].dragClickX = 0;
-      window[my.name].dragClickY = 0;
-      window[my.name].dragOffsetX = 0;
-      window[my.name].dragOffsetY = 0;
 
       var noteText = document.createElement('p');
 
@@ -259,15 +269,37 @@ var app = function () {
     return that;
   };
 
-  var gameState = {
-    programs: {
-      open: {
-        name: 'open'
+  var Program = function (my) {
+    var my = my || {},
+        that = {};
+
+    that.use = my.use;
+    that.desc = my.desc;
+
+    that.run = function (input) {
+      var lnout = appendOutput();
+      input.splice(0, 1);
+
+      if ( typeof my.process == 'function' ) {
+        my.process(input, lnout, function () {
+          focusInput();
+        });
+      } else {
+        lnout.innerHTML = err.noOutput;
       }
     }
+
+    return that;
   };
 
   init();
+
+  var state = {};
+
+  var err = {
+    noOutput: "This program has no output function (that's a bug)",
+    cmdNotFound: "Err: program does not exist (try \"help\")"
+  }
 
   startNote = Note({ // declared globally on purpose
     name: 'startNote',
@@ -276,6 +308,25 @@ var app = function () {
   });
 
   startNote.display();
+
+  state.help = Program({
+    desc: "Displays info about installed programs.",
+    use: "Usage:\n"+ fitInStr("help", 19) + " | List all installed programs.\n" + fitInStr("help [program]", 19) +" | Display information about a program.",
+    process: function (input, lnout, cb) {
+      if ( input[0] ) {
+        if ( state[input[0]] ) {
+          lnout.innerHTML = 'Description:\n'+ state[input[0]].desc + '\n\n' + state[input[0]].use;
+        } else {
+          lnout.innerHTML = 'Program "'+ input[0] +'" not found.';
+        }
+      } else {
+        lnout.innerHTML = "Installed programs:\n";
+      }
+      cb();
+    }
+  });
+
+  state.
 
 };
 
