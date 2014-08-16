@@ -28,6 +28,7 @@ template {
   color: $term-color;
   padding: 1em;
   overflow-y:scroll;
+  -webkit-font-smoothing:none;
 }
 .shell input {
   -webkit-appearance: none;
@@ -39,6 +40,7 @@ template {
   display:inline-block;
   width:90%;
   font-family: inherit;
+  -webkit-font-smoothing:none;
   &:before {
     display:inline;
     content: "$";
@@ -50,6 +52,7 @@ template {
 }
 .note {
   font-family: 'Nothing You Could Do', cursive;
+  -webkit-font-smoothing: antialiased;
   position:absolute;
   top:103%;
   right:50%;
@@ -62,18 +65,19 @@ template {
   min-height: 8em;
   cursor: pointer;
   box-shadow: 8px 8px 0px rgba(0,0,0,0.3);
+  .note-rm {
+    position:relative;
+    color: #000;
+    text-decoration: none;
+    font-size:2em;
+    float:right;
+    top:-0.5em;
+  }
+  p {
+    margin-bottom: 0;
+  }
 }
-.note .note-remove {
-  position:relative;
-  color: #000;
-  text-decoration: none;
-  font-size:2em;
-  float:right;
-  top:-0.5em;
-}
-.note p {
-  margin-bottom: 0;
-}
+
 hr {
   border-color: $term-color;
 }

@@ -41,11 +41,11 @@ File
   str  type : str file/folder // may add more types, not sure
   func access (options, cb) : array || str // returns a string with the contents of the file or an array of the children if it's a directory. Maybe accepts options, depending on the thing
 
-Note
-  int  lastX & lastY // last place that it was dropped (needed to keep dragging working)
-  str  content // the content of the string
-  func drag () : // move the note around
-  func remove () : null // remove the note from the screen
+-Note
+  -int  lastX & lastY // last place that it was dropped (needed to keep dragging working)
+  -str  content // the content of the string
+  -func drag () : // move the note around
+  -func remove () : null // remove the note from the screen
 */
 
 var app = function () {
@@ -180,15 +180,79 @@ var app = function () {
     log( JSON.stringify( gameState ) );
   };
 
-  saveState();
-};
+  var Note = function (my) {
+    var my = my || {};
+    var that = {};
 
-var gameState = {
-  programs: {
-    open: {
-      name: 'open'
+    if ( my.removable == true ) {
+      var template = getTemplate('note-rm-template');
+    } else {
+      var template = getTemplate('note-template');
     }
-  }
+
+    var id = uniqueId();
+
+    that.display = function () {
+      var note = template.querySelector('.note');
+      window[my.name].dragClickX = 0;
+      window[my.name].dragClickY = 0;
+      window[my.name].dragOffsetX = 0;
+      window[my.name].dragOffsetY = 0;
+
+      var noteText = document.createElement('p');
+
+      noteText.innerHTML = my.text;
+      note.appendChild(noteText);
+      note.id = id;
+      term.appendChild(note);
+
+      note.addEventListener('mousedown', function (event) {
+        window[my.name].dragClickX = event.x;
+        window[my.name].dragClickY = event.y;
+        window.addEventListener('mousemove', window[my.name].drag);
+        document.body.classList.add('dragging');
+      });
+      note.addEventListener('mouseup', function () {
+        window[my.name].dragClickX = undefined;
+        window[my.name].dragClickY = undefined;
+        window[my.name].dragOffsetX = parseInt(this.style.transform.match(/translateX\((-?[0-9]{1,})px\)/)[1]);
+        window[my.name].dragOffsetY = parseInt(this.style.transform.match(/translateY\((-?[0-9]{1,})px\)/)[1]);
+        window.removeEventListener('mousemove', window[my.name].drag);
+        document.body.classList.remove('dragging');
+      });
+      if (my.removable) {
+        note.querySelector('.note-rm').addEventListener('click', function () {
+          this.parentNode.parentNode.removeChild(this.parentNode);
+        });
+      }
+    };
+
+    that.drag = function (e) {
+      var transValue = "translateX(" + (e.x - window[my.name].dragClickX + window[my.name].dragOffsetX) + "px) translateY(" + (e.y - window[my.name].dragClickY + window[my.name].dragOffsetY) + "px)",
+          el = gtById(id);
+      el.style.transform = transValue;
+      el.style.webkitTransform = transValue;
+    };
+
+    return that;
+  };
+
+  var gameState = {
+    programs: {
+      open: {
+        name: 'open'
+      }
+    }
+  };
+
+  startNote = Note({ // declared globally on purpose
+    name: 'startNote',
+    text: 'CHECK MESSAGES',
+    removable: true
+  });
+
+  startNote.display();
+
 };
 
 window.requestAnimationFrame(app);
@@ -198,105 +262,8 @@ window.requestAnimationFrame(app);
 
 var terminal = function () {
   "use strict";
-  var term = document.getElementById('terminal'),
-      termWrap = document.getElementById('term-wrap'),
-      shell,
-      shellInput,
-      noteTemplate = document.getElementById('note-template'),
-      noteRemovableTemplate = document.getElementById('note-removeable-template'),
-      currentId = 'uniqueid0',
-      clickX,
-      clickY,
-      dragOffsetX,
-      dragOffsetY,
-      dragTarget;
-
-  var appendInput = function () {
-    if (document.getElementById('shell') == null) {
-      // First-time setup
-      shell = document.getElementById('shell-template').content.cloneNode(true);
-      term.appendChild(shell);
-    } else {
-      var shell = document.getElementById('shell');
-      var shellCopy = shell.cloneNode(true);
-      shell.remove();
-      shellCopy.querySelector('input').value = '';
-      term.appendChild(shellCopy);
-    }
-    var shell = document.getElementById('shell');
-    shellInput = document.getElementById('shell-input');
-    shellInput.focus();
-    shell.addEventListener('keydown', function (event) {
-      if (event.keyIdentifier === 'Enter') {
-        submitInput();
-      }
-    });
-  }
-
-  var submitInput = function () {
-    var output = document.getElementById('shell-line-template').content.cloneNode(true);
-    output.querySelector('.shell-line').innerHTML = parseInput(shellInput.value);
-    term.appendChild(output);
-    appendInput();
-  }
-
-  var parseInput = function (input) {
-    input = input.toLowerCase();
-    var tokens = input.split(' ');
-    if (typeof commands[tokens[0]] == 'object') {
-      return commands[tokens[0]].run(tokens);
-    } else {
-      if (typeof secretCommands[tokens[0]] == 'object') {
-        commands[tokens[0]] = secretCommands[tokens[0]];
-        return 'Program "'+tokens[0]+'" installed.';
-      }
-      return 'ERR: Please use a valid program name (try "help")';
-    }
-  }
-
   var sep = function () {
     return "<hr>";
-  };
-
-  var addNote = function (noteBody, removable) {
-    if (removable == undefined || removable == true) {
-      var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
-    } else {
-      var note = noteRemovableTemplate.content.querySelector('.note').cloneNode(true);
-    }
-    var noteText = document.createElement('p');
-    noteText.innerHTML = noteBody;
-    note.appendChild(noteText);
-
-    note.addEventListener('mousedown', function (event) {
-      playSound('stickyremove.mp3', 'fg', 0.2, false);
-      clickX = event.x;
-      clickY = event.y;
-      window.addEventListener('mousemove', draggable);
-      dragTarget = this;
-      document.body.classList.add('dragging');
-    });
-    note.addEventListener('mouseup', function () {
-      clickX = undefined;
-      clickY = undefined;
-      dragOffsetX = parseInt(this.style.transform.match(/translateX\((-?[0-9]{1,})px\)/)[1]);
-      dragOffsetY = parseInt(this.style.transform.match(/translateY\((-?[0-9]{1,})px\)/)[1]);
-      window.removeEventListener('mousemove', draggable);
-      document.body.classList.remove('dragging');
-    });
-
-    note.querySelector('.note-remove').addEventListener('click', function () {
-      this.parentNode.parentNode.removeChild(this.parentNode);
-      shellInput.focus();
-    });
-    termWrap.appendChild(note);
-
-  };
-
-  var draggable = function (e) {
-    var transValue = "translateX(" + (e.x - clickX + (dragOffsetX ? dragOffsetX : 0)) + "px) translateY(" + (e.y - clickY + (dragOffsetY ? dragOffsetY : 0)) + "px)";
-    dragTarget.style.transform = transValue;
-    dragTarget.style.webkitTransform = transValue;
   };
 
   var commands = {
@@ -446,10 +413,6 @@ var terminal = function () {
       "doc": "Testing",
     }
   };
-
-  appendInput();
-  addNote('CHECK MESSAGES');
-  //playSound('bg-ambient.mp3', 'bg', 0.1, true);
 };
 
 requestAnimationFrame(terminal); */
