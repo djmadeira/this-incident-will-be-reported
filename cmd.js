@@ -49,6 +49,31 @@ File
 */
 
 var app = function () {
+  var inputTemplate, // Template for the input
+      lnTemplate, // Template for a new line
+      term, // The terminal in the DOM. This shouldn't go anywhere, so this won't have to be updated.
+      input,
+      debug,
+      installed,
+      notes,
+      errorMsgs;
+
+  var init = function () {
+    inputTemplate = getTemplate('input-template');
+    lnTemplate = getTemplate('ln-template');
+    term = gtById('terminal');
+    input;
+    debug = true;
+    installed = {};
+    notes = [];
+    errorMsgs = {};
+
+    gtById('save').addEventListener('click', saveGame);
+    gtById('load').addEventListener('click', loadGame);
+
+    appendInput();
+    focusInput();
+  };
 
   // --------------- Util Functions --------------- //
 
@@ -77,7 +102,7 @@ var app = function () {
   var uniqueId = function uniqueId () {
     var id = '';
         length = 16, // hnnnng so hexy
-        chars = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+        chars = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']; // That's 18,446,744,073,709,600,000 possibilities for those of you following at home
     for (var i=0; i < length; i++) {
       id += chars[Math.floor(Math.random() * 16)];
     }
@@ -88,32 +113,13 @@ var app = function () {
     }
   };
 
-  // ---------------- Variables ------------------- //
-
-  var inputTemplate = getTemplate('input-template'), // Template for the input
-      lnTemplate = getTemplate('ln-template'), // Template for a new line
-      term = gtById('terminal'), // The terminal in the DOM. This shouldn't go anywhere, so this won't have to be updated.
-      debug = true,
-      installed = {},
-      notes = [],
-      errorMsgs = {};
-
   // -------------- Base Functions ---------------- //
 
-  var init = function () {
-    appendInput();
-    gtById('input').focus();
-    var out = appendOutput();
-    out.innerHTML = 'Welcome!';
-    appendInput();
-  };
-
   // When called, gets input from the field (if any) and calls the appropriate program, passing it token-ized arguments.
-  var parseInput = function (input) {
-    inputEl = gtById('input');
-    input = inputEl.value;
-    if (input) {
-      var tokens = input.split(' ');
+  var parseInput = function () {;
+    var val = input.value;
+    if (val) {
+      var tokens = val.split(' ');
       if ( installed[tokens[0]] ) {
         installed[tokens[0]]
       } else {
@@ -134,9 +140,24 @@ var app = function () {
 
   // Usually called from the callback for programs; gives the user input ability after programs are finished running.
   var appendInput = function () {
-    inputTemplate = getTemplate('input-template');
-    term.appendChild(inputTemplate);
+    if ( !gtById('input') ) {
+      inputTemplate = getTemplate('input-template');
+      term.appendChild(inputTemplate);
+      input = gtById('input');
+      input.addEventListener('keydown', function (e) {
+        if (e.keyIdentifier == "Enter") {
+          parseInput();
+        }
+      });
+    }
   };
+
+  var focusInput = function () {
+    if ( !gtById('input') ) {
+      appendInput();
+    }
+    input.focus();
+  }
 
   // Replace the keywords in a string, similar to PHP's `sprintf`.
   var keywordReplace = function (string, values) {
@@ -166,9 +187,6 @@ var app = function () {
     cb(id);
   };
 
-  init();
-
-
   var getData = function (query, cb) {
     var request = new XMLHttpRequest ();
     request.onload = cb;
@@ -176,8 +194,12 @@ var app = function () {
     request.send();
   };
 
-  var saveState = function () {
+  var saveGame = function () {
     log( JSON.stringify( gameState ) );
+  };
+
+  var loadGame = function () {
+    alert('What you wanna load?');
   };
 
   var Note = function (my) {
@@ -244,6 +266,8 @@ var app = function () {
       }
     }
   };
+
+  init();
 
   startNote = Note({ // declared globally on purpose
     name: 'startNote',

@@ -64,7 +64,7 @@ template {
   max-width:14em;
   min-height: 8em;
   cursor: pointer;
-  box-shadow: 8px 8px 0px rgba(0,0,0,0.3);
+  box-shadow: -8px -8px 0px rgba(0,0,0,0.3);
   .note-rm {
     position:relative;
     color: #000;
@@ -75,6 +75,16 @@ template {
   }
   p {
     margin-bottom: 0;
+  }
+}
+.links {
+  position:absolute;
+  bottom:0;
+  right:0;
+  padding: 0.5em;
+  font-size:0.8em;
+  a {
+    color: #dad1d2;
   }
 }
 
@@ -96,8 +106,8 @@ hr {
 }
 @media only screen and (min-width: 1200px) {
   .note {
-    top:20%;
-    right:85%;
+    top:5%;
+    left:70%;
     margin:0;
   }
 }
