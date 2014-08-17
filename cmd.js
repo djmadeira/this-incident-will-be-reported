@@ -127,8 +127,8 @@ var app = function () {
     var val = input.value;
     if (val) {
       var tokens = val.split(' ');
-      if ( state[tokens[0]] ) {
-        state[tokens[0]].run(tokens);
+      if ( state.installed[tokens[0]] ) {
+        state.installed[tokens[0]].run(tokens);
       } else {
         var lnout = appendOutput();
         lnout.innerHTML = err.cmdNotFound;
@@ -188,6 +188,10 @@ var app = function () {
       return str + whitespace;
     }
   };
+
+  var spc = function () {
+    return '\n<span class="spc"></span>';
+  }
 
   // Sound "engine". Collection of functions for loading, playing and pausing sounds. Can also interrupt sounds.
   var loadSound = function (id, url, cb) {
@@ -294,7 +298,10 @@ var app = function () {
 
   init();
 
-  var state = {};
+  var state = {
+    installed: {},
+    user: 'undefined'
+  };
 
   var err = {
     noOutput: "This program has no output function (that's a bug)",
@@ -309,24 +316,36 @@ var app = function () {
 
   startNote.display();
 
-  state.help = Program({
+  state.installed.help = Program({
     desc: "Displays info about installed programs.",
     use: "Usage:\n"+ fitInStr("help", 19) + " | List all installed programs.\n" + fitInStr("help [program]", 19) +" | Display information about a program.",
     process: function (input, lnout, cb) {
-      if ( input[0] ) {
-        if ( state[input[0]] ) {
-          lnout.innerHTML = 'Description:\n'+ state[input[0]].desc + '\n\n' + state[input[0]].use;
+      if ( input[0] != undefined ) {
+        if ( state.installed[input[0]] ) {
+          lnout.innerHTML = 'Description:\n'+ state.installed[input[0]].desc + spc() + state.installed[input[0]].use;
         } else {
           lnout.innerHTML = 'Program "'+ input[0] +'" not found.';
         }
       } else {
-        lnout.innerHTML = "Installed programs:\n";
+        var print = "Installed programs:\n";
+        for (var program in state.installed) {
+          print += '  '+ program +'\n';
+        }
+
+        lnout.innerHTML = print;
       }
       cb();
     }
   });
 
-  state.
+  state.installed.whoami = Program({
+    desc: 'Displays info about the current user',
+    use: 'Usage:\nwhoami',
+    process: function (input, lnout, cb) {
+      lnout.innerHTML = state.user;
+      cb();
+    }
+  });
 
 };
 
