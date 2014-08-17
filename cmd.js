@@ -4,6 +4,8 @@
   * Don't look, unless you were looking for a manual on how *not* to write code.
 **/
 
+var Platform = require('polyfill-webcomponents');
+
 /*
 App
   -dom  template // the template for the terminal
@@ -246,7 +248,6 @@ var app = function () {
         window[my.name].dragClickX = event.x;
         window[my.name].dragClickY = event.y;
         window.addEventListener('mousemove', window[my.name].drag);
-        document.body.classList.add('dragging');
       });
       note.addEventListener('mouseup', function () {
         window[my.name].dragClickX = undefined;
@@ -254,7 +255,6 @@ var app = function () {
         window[my.name].dragOffsetX = parseInt(this.style.transform.match(/translateX\((-?[0-9]{1,})px\)/)[1]);
         window[my.name].dragOffsetY = parseInt(this.style.transform.match(/translateY\((-?[0-9]{1,})px\)/)[1]);
         window.removeEventListener('mousemove', window[my.name].drag);
-        document.body.classList.remove('dragging');
       });
       if (my.removable) {
         note.querySelector('.note-rm').addEventListener('click', function () {
@@ -308,13 +308,15 @@ var app = function () {
     cmdNotFound: "Err: program does not exist (try \"help\")"
   }
 
-  startNote = Note({ // declared globally on purpose
-    name: 'startNote',
-    text: 'CHECK MESSAGES',
-    removable: true
-  });
+  window.setTimeout(function () {
+    startNote = Note({ // declared globally on purpose
+      name: 'startNote',
+      text: 'smashthestate',
+      removable: true
+    });
+    startNote.display();
+  }, 5000);
 
-  startNote.display();
 
   state.installed.help = Program({
     desc: "Displays info about installed programs.",

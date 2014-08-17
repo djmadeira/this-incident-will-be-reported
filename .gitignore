@@ -2,3 +2,4 @@
 *.jpg
 source
 .sass-cache
+node_modules

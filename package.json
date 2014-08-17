@@ -1,0 +1,19 @@
+{
+  "name": "incident",
+  "version": "0.0.0",
+  "description": "Browser-based command line hacking game",
+  "main": "cmd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "/Users/dj/Documents/Misc tinkerings/cmd/.git"
+  },
+  "author": "DJ Madeira",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^5.10.0",
+    "polyfill-webcomponents": "^0.20140718.0"
+  }
+}
