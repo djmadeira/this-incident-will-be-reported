@@ -19,12 +19,41 @@ module.exports = function(grunt) {
           'cmd.min.js': 'cmd.js'
         }
       }
+    },
+    watch: {
+      default: {
+        files: ['*.{js,scss}', '!*.min.{js,scss}'],
+        tasks: ['default']
+      }
+    },
+    sass: {
+      default: {
+        options: {
+          sourcemap: true,
+          style: 'compressed',
+          banner: '/* Uncompressed source file: djmadeira.com/cmd/style.scss */'
+        },
+        files: {
+          'style.min.css': 'style.scss'
+        }
+      }
+    },
+    autoprefixer: {
+      default: {
+        files: {
+          'style.min.css': 'style.min.css'
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-autoprefixer');
 
-  grunt.registerTask('default', ['browserify', 'uglify']);
+  grunt.registerTask('default', ['browserify', 'uglify', 'sass', 'autoprefixer']);
+  grunt.registerTask('w', ['watch']);
 
 };

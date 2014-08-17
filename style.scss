@@ -13,9 +13,9 @@ body {
   color: #fff;
   margin:0;
   font-family: Courier, monospace, sans-serif;
-  -webkit-animation: fade 5s ease-out;
+  animation: fade 5s ease-out;
 }
-@-webkit-keyframes fade {
+@keyframes fade {
   from {
     opacity: 0;
   }
@@ -81,7 +81,7 @@ template {
   max-width:14em;
   min-height: 8em;
   cursor: pointer;
-  -webkit-animation: note 0.3s ease;
+  animation: note 0.3s ease;
   .note-rm {
     position:relative;
     color: #000;
@@ -94,14 +94,14 @@ template {
     margin-bottom: 0;
   }
 }
-@-webkit-keyframes note {
+@keyframes note {
   from {
     opacity: 0;
-    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
   }
   to {
     opacity: 1;
-    -webkit-transform: scale(1);
+    transform: scale(1);
   }
 }
 .links {
