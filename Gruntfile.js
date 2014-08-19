@@ -53,7 +53,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-autoprefixer');
 
-  grunt.registerTask('default', ['browserify', 'uglify', 'sass', 'autoprefixer']);
+  grunt.registerTask('default', ['browserify', /*'uglify',*/ 'sass', 'autoprefixer']);
   grunt.registerTask('w', ['watch']);
 
 };

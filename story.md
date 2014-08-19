@@ -21,6 +21,17 @@ As if the future took place in the late 90s.
 
 Evil governments masked with incompetence.
 
+## Best conspiracies
+
+* [DIA](http://www.westword.com/2007-08-30/news/dia-conspiracies-take-off/full)
+* New World Order
+* Big pharma
+* NSA
+
+## What do conspiracies look like in the future?
+
+
+
 ## Setting ##
 Takes place in the Miami, Florida in 2031.
 
@@ -65,4 +76,10 @@ The portal contains netlocs to Hack News, Two Bit, a chatroom (empty), a pirate 
 
 capture.pkg is encrypted, but sys.log gives more clues about what happened when the computer crashed (what it was connected to, what file was downloaded, and the user at the time of the crash). It also explains what happens to the mods in the hacker's brain.
 
-The player can now log into the nOwz writer portal and find out what happened to her colleagues, download the message program, and get information on how to hack things.
+The player can now log into the nOwz writer portal and find out what happened to her colleagues, download the message program, and get information on how to hack things. Post it: "where are they holding them?"
+
+Player can use the search program to find the IPloc of the police station and hack it to find out stuff. They get a couple of internal emails from police officers talking about the arrests and the state of police work in general, as well as a transcript of an interview with one of her colleagues in which they accuse her of selling them out. On disconnect, end day 1: fade to black, display "Day 2", fade back in.
+
+Day 2, the reports about the case air online, accusing intercom of faking evidence in order to get the arrests. In the chat room, somebody mentions a vulnerability in infocom's servers: a secret port that contains their internal message service. On this server can be found a couple of internal messages from employees, a decryption program, and the netloc and login for a third-party IT service used by infocom.
+
+The third party server is actually a large technical services and research company that does contracts for the government and private corporations.
