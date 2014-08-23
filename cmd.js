@@ -257,7 +257,11 @@ var app = function () {
 
   var state = {
     installed: {},
-    user: 'undefined'
+    user: 'rachel',
+    wd: {
+      'read.pg': 'net://read',
+      'crash.log': "31.11.16 22:51: CRITICAL FAILURE: CONNECTION TERMINATED BY SYSTEM. Details:\n"
+    }
   };
 
   var err = {
@@ -305,6 +309,77 @@ var app = function () {
       cb();
     }
   });
+
+  state.installed.install = Program({
+    desc: 'Install programs from a .pg file or netloc.',
+    use: 'Usage:\ninstall loc (where "loc" is the net:// location of the program or the name of a .pg file in the working directory)',
+    process: function (input, lnout, cb) {
+      log(input);
+      if (!input[0]) {
+        lnout.innerHTML = this.use;
+        return cb();
+      }
+      if (state.wd[input[0]] && secret[input[0]]) {
+        var name = secret[input[0]].name;
+        state.installed[name] = Program(secret[input[0]].program);
+        delete state.wd[input[0]];
+        var anim = getTemplate('install-animation-template');
+        lnout.appendChild(anim);
+        var el = document.createElement('span');
+        el.innerHTML = 'Program "' + name + '" installed successfully.';
+        window.setTimeout(function (cb, lnout, el) {
+          lnout.appendChild(el);
+          cb();
+        }, 2000, cb, lnout, el);
+      } else {
+        lnout.innerHTML = 'Program "' + name + '" not found.';
+        cb();
+      }
+    },
+  })
+
+  state.installed.list = Program({
+    desc: 'List files in the current working directory',
+    use: 'Usage: \nlist',
+    process: function (input, lnout, cb) {
+      var output = "";
+      for (var $file in state.wd) {
+        output += $file + '\n';
+      }
+      lnout.innerHTML = output;
+      cb();
+    }
+  });
+
+  var secret = {
+    'read.pg': {
+      name: 'read',
+      program: {
+        desc: 'Read files in the working directory',
+        use: 'Usage:\nread file (where "file" is the name of a file in the working directory)',
+        process: function (input, lnout, cb) {
+          if ( ! input[0] ) {
+            lnout.innerHTML = this.use;
+          } else {
+            if ( state.wd[input[0]] ) {
+              var fileHeader = document.createElement('span');
+              fileHeader.innerHTML = 'File contents:\n==============\n';
+              lnout.appendChild(fileHeader);
+              var fileRead = document.createElement('span');
+              fileRead.innerHTML = state.wd[input[0]];
+              lnout.appendChild(fileRead);
+              var fileFooter = document.createElement('span');
+              fileFooter.innerHTML = '==============';
+              lnout.appendChild(fileFooter);
+            } else {
+              lnout.innerHTML = "File not found or not a readable file: " + input[0];
+            }
+          }
+          cb();
+        }
+      }
+    }
+  };
 
 };
 

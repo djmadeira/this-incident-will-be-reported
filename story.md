@@ -53,18 +53,15 @@ Smart tech enthusiasts hang on to their hardware as long as possible, as the gov
 
 ## Setup
 
-The protagonist was a writer & programmer for the pirate portal nOwz. Their main stock & trade was haxpozè; hacking into the phones, websites or databases of people or corporations in power.
+The protagonist was a writer for the pirate portal nOwz. Their main stock & trade was haxpozè; hacking into the phones, websites or databases of people or corporations in power.
 
-Before the story takes place, the protagonist was in the process of accessing information from a major entertainment corporation intercom, when she was discovered. Before she could jack out, they were able to fry her brain implants and computer rig.
-
-Intercom received enough information before she could jack out to find the nOwz offices and arrest her co-workers. They are told that she has sold them out.
-
+Before the story takes place, the protagonist was in the process of accessing information from a major entertainment corporation intercom, when she was discovered. Before she could jack out, they were able to fry her computer rig.
 
 ## Outline
 
 Fade from black. Screen displays a message: RECOVERED FROM CRITICAL HARDWARE FAILURE. DATA CORRUPTED. FORMATTING DRIVE. Post-it note goes up: "pw: smashthestate".
 
-Starter programs: help, list, install, whoami. Player explores the programs they have available, eventually using list and seeing the two files visible to them: read.pg and crash.log. They figure out how to install the read program and use it to read the crash log.
+Starter programs: help, list, install, whoami. Player explores the programs they have available, eventually using list and seeing the two files visible to them: read.program and crash.log. They figure out how to install the read program and use it to read the crash log.
 
 The crash log contains clues to what happened and instructions to install the net program. When the player installs the net program, a sticky goes up "portal - net://etc", giving them a place to go next.
 
@@ -74,12 +71,12 @@ The portal contains netlocs to Hack News, Two Bit, a chatroom (empty), a pirate 
   scan.pg - program that scans a given IPloc for open ports
   recover.pg - Program that reveals files on the computer: capture.pkg, sys.log
 
-capture.pkg is encrypted, but sys.log gives more clues about what happened when the computer crashed (what it was connected to, what file was downloaded, and the user at the time of the crash). It also explains what happens to the mods in the hacker's brain.
+capture.pkg is encrypted, but sys.log gives more clues about what happened when the computer crashed (what it was connected to, what file was downloaded, and the user at the time of the crash).
 
-The player can now log into the nOwz writer portal and find out what happened to her colleagues, download the message program, and get information on how to hack things. Post it: "where are they holding them?"
+In the chat room, somebody mentions a vulnerability in infocom's servers: a secret port that contains their internal message service. On this server can be found a couple of internal messages from employees, a decryption program, and the netloc and login for a secure channel to communicate with infocom's server maintenance bot.
 
-Player can use the search program to find the IPloc of the police station and hack it to find out stuff. They get a couple of internal emails from police officers talking about the arrests and the state of police work in general, as well as a transcript of an interview with one of her colleagues in which they accuse her of selling them out. On disconnect, end day 1: fade to black, display "Day 2", fade back in.
+Player can connect to the bot and answer some "security questions" of the bot in order to gain access to the secure server. Once accessed, they can learn more about infocom's AI tech as well as receive a decryption key for the previously downloaded packet.
 
-Day 2, the reports about the case air online, accusing intercom of faking evidence in order to get the arrests. In the chat room, somebody mentions a vulnerability in infocom's servers: a secret port that contains their internal message service. On this server can be found a couple of internal messages from employees, a decryption program, and the netloc and login for a third-party IT service used by infocom.
+As soon as the packet is decrypted, the screen flashes and the game makes creepy, screeching noises. The text flashes on screen: THIS INCIDENT WILL BE REPORTED. The screen blinks off, then comes back: everything is *almost* the same as before, but slightly creepy and off.
 
-The third party server is actually a large technical services and research company that does contracts for the government and private corporations.
+Lots of messages about how you've been identified and that the incident has been reported. Lots of dead-end clues. Maybe I'll add a "real" ending somewhere.
