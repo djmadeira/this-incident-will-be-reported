@@ -38,6 +38,15 @@ module.exports = function(grunt) {
         }
       }
     },
+    libsass: {
+      default: {
+        options: {
+          sourcemap:true,
+        },
+        src: 'style.scss',
+        dest: 'style.min.css'
+      }
+    },
     autoprefixer: {
       default: {
         files: {
@@ -52,8 +61,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-autoprefixer');
+  grunt.loadNpmTasks('grunt-libsass');
 
-  grunt.registerTask('default', ['browserify', /*'uglify',*/ 'sass', 'autoprefixer']);
+  grunt.registerTask('default', ['browserify', /*'uglify',*/ 'libsass', 'autoprefixer']);
   grunt.registerTask('w', ['watch']);
 
 };

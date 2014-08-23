@@ -4,7 +4,7 @@
   * Don't look, unless you were looking for a manual on how *not* to write code.
 **/
 
-var Platform = require('polyfill-webcomponents');
+var webcomponentsPolyfill = require('polyfill-webcomponents');
 
 // ------------- Boring Polyfills --------------- //
 window.requestAnimationFrame = window.requestAnimationFrame ||
