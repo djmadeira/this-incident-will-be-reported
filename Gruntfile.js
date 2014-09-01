@@ -63,7 +63,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-autoprefixer');
   grunt.loadNpmTasks('grunt-libsass');
 
-  grunt.registerTask('default', ['browserify', /*'uglify',*/ 'libsass', 'autoprefixer']);
-  grunt.registerTask('w', ['watch']);
+  grunt.registerTask('default', ['browserify', 'uglify', 'libsass', 'autoprefixer']);
+  grunt.registerTask('watcher', ['watch']);
 
 };

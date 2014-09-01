@@ -1,17 +1,18 @@
 /**
-  * Way to view source bro/sis! Here's a rundown of how it works:
+  * Way to view source friend! Here's a rundown of how it works:
   * derp derp hax quick solution half-assed thing derp herp derp.
   * Don't look, unless you were looking for a manual on how *not* to write code.
 **/
 
-var webcomponentsPolyfill = require('polyfill-webcomponents');
-
-// ------------- Boring Polyfills --------------- //
+/**
+ * Boring Polyfills
+ */
 window.requestAnimationFrame = window.requestAnimationFrame ||
   window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
   function (func) {
     window.setTimeout(func, 33); // 30 FPS
   };
+var webcomponentsPolyfill = require('polyfill-webcomponents');
 
 var app = function () {
   var inputTemplate, // Template for the input
@@ -40,8 +41,9 @@ var app = function () {
     focusInput();
   };
 
-  // --------------- Util Functions --------------- //
-
+  /**
+   * Utility functions
+   */
   // getElementById wrapper
   var gtById = function (id) {
     return document.getElementById(id);
@@ -52,15 +54,11 @@ var app = function () {
     if ( debug ) { console.log(msg); }
   };
 
-  // Gets a template (with a "polyfill" lol not)
+  // Gets a copy of a template
   var getTemplate = function (id) {
     var template = gtById(id);
     if ( ! template ) { return false; }
-    if ( template.content ) {
-      return template.content.cloneNode(true);
-    } else {
-      return template.firstChild.cloneNode(true);
-    }
+    return template.content.cloneNode(true);
   };
 
   // Generate a unique, hexy ID (move that hexy bod grrl)
@@ -77,8 +75,6 @@ var app = function () {
       return id;
     }
   };
-
-  // -------------- Base Functions ---------------- //
 
   // When called, gets input from the field (if any) and calls the appropriate program, passing it token-ized arguments.
   var parseInput = function () {;
@@ -128,8 +124,7 @@ var app = function () {
 
   // Replace the keywords in a string, similar to PHP's `sprintf`.
   var keywordReplace = function (string, values) {
-    var values = values || {}, i=1;
-    for (var val in values) {
+    for (var i=0; i < values.length; i++) {
       string = string.replace('%'+i, val);
     }
     return string;
@@ -141,11 +136,61 @@ var app = function () {
       return str.substring(0, str.length - 2) + '..';
     } else {
       // Lengthen the string with ' ' until it meets the number of characters required
-      var whitespace = " ";
+      var whitespace = "";
       while ( whitespace.length < length - str.length ) { whitespace += " " };
       return str + whitespace;
     }
   };
+
+  var breakAtLength = function (str, length, column) {
+    var newStr = '';
+    if ( str.length > length ) {
+      var i = 0, offset = '';
+      while (i != null) {
+        if (column && i > 0) {
+          offset = fitInStr('', column * length);
+        }
+        newStr += offset +  str.substring( i * length, i * length + length ) + '\n';
+        i++;
+        if ( i * length > str.length ) {
+          break;
+        }
+      }
+    } else {
+      newStr = fitInStr(str, length);
+    }
+    return newStr;
+  }
+
+  var tableLayout = function (data) {
+    var width = data.width || 28,
+        columnCount = data.rowCount || 2,
+        output = '',
+        separator = data.separator || '|';
+    for (var i=0, j=data.titles.length; i<j; i++) {
+      output += fitInStr(data.titles[i], width);
+    }
+    output += '\n';
+    for (var i=0, j=data.rows.length; i<j; i++) {
+      var row = data.rows[i];
+      for (var k=0, l=row.length; k<l; k++) {
+        output += breakAtLength(row[k], width, k);
+      }
+    }
+    return output;
+  };
+
+  var usageTable = function (rows) {
+    return tableLayout({
+      columns: 2,
+      width: 29,
+      titles: [
+        'Usage',
+        'Description'
+      ],
+      rows: rows
+    })
+  }
 
   var spc = function () {
     return '\n<span class="spc"></span>';
@@ -173,6 +218,9 @@ var app = function () {
     alert('What you wanna load?');
   };
 
+  /**
+   * Object constructors
+   */
   var Note = function (my) {
     var my = my || {};
     var that = {};
@@ -281,7 +329,7 @@ var app = function () {
 
   state.installed.help = Program({
     desc: "Displays info about installed programs.",
-    use: "Usage:\n"+ fitInStr("help", 19) + " | List all installed programs.\n" + fitInStr("help [program]", 19) +" | Display information about a program.",
+    use: usageTable([ ['help', 'List all installed programs.'], ['help program', 'Where "program" is the name of an installed program. Display instructions for the program.'] ]),
     process: function (input, lnout, cb) {
       if ( input[0] != undefined ) {
         if ( state.installed[input[0]] ) {
@@ -294,7 +342,7 @@ var app = function () {
         for (var program in state.installed) {
           print += '  '+ program +'\n';
         }
-
+        print += 'For instructions on using a program, type "help program", where "program" is an installed program.'
         lnout.innerHTML = print;
       }
       cb();
@@ -302,7 +350,7 @@ var app = function () {
   });
 
   state.installed.whoami = Program({
-    desc: 'Displays info about the current user',
+    desc: 'Displays info about the current user.',
     use: 'Usage:\nwhoami',
     process: function (input, lnout, cb) {
       lnout.innerHTML = state.user;
@@ -312,7 +360,7 @@ var app = function () {
 
   state.installed.install = Program({
     desc: 'Install programs from a .pg file or netloc.',
-    use: 'Usage:\ninstall loc (where "loc" is the net:// location of the program or the name of a .pg file in the working directory)',
+    use: usageTable([ ['install loc', 'Where "loc" is a netloc of a program to install (e.g. net://file.pg).'], ['install file.pg', 'Where "file.pg" is the name of a .pg file in the working directory.'] ]),
     process: function (input, lnout, cb) {
       log(input);
       if (!input[0]) {
@@ -339,8 +387,8 @@ var app = function () {
   })
 
   state.installed.list = Program({
-    desc: 'List files in the current working directory',
-    use: 'Usage: \nlist',
+    desc: 'List files in the working directory.',
+    use: usageTable([ ['list', 'List all files in the working directory'] ]),
     process: function (input, lnout, cb) {
       var output = "";
       for (var $file in state.wd) {
@@ -355,8 +403,8 @@ var app = function () {
     'read.pg': {
       name: 'read',
       program: {
-        desc: 'Read files in the working directory',
-        use: 'Usage:\nread file (where "file" is the name of a file in the working directory)',
+        desc: 'Read files in the working directory.',
+        use: usageTable([ ['read file', 'Where "file" is the name of a file in the working directory (try "list" to see files).'] ]),
         process: function (input, lnout, cb) {
           if ( ! input[0] ) {
             lnout.innerHTML = this.use;
