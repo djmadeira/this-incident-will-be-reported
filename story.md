@@ -65,10 +65,10 @@ Starter programs: help, list, install, whoami. Player explores the programs they
 
 The crash log contains clues to what happened and instructions to install the net program. When the player installs the net program, a sticky goes up "portal - net://etc", giving them a place to go next.
 
-The portal contains netlocs to Hack News, Two Bit, a chatroom (empty), a pirate music service, a search engine, and an anonymous file share service. When they connect to the file share service, they have to input the password from the sticky note to access. They are then given a list of files that were previously hosted:
+The portal contains netlocs to Hack News, a chatroom (empty), a search engine, and an anonymous file share service. When they connect to the file share service, they have to input the password from the sticky note to access. They are then given a list of files that were previously hosted:
 
-  bookmarks.rd - links, passwords for nOwz writer portal
-  scan.pg - program that scans a given IPloc for open ports
+  bookmarks.txt - links, passwords for nOwz writer portal
+  parasite.pg - program for taking control of servers
   recover.pg - Program that reveals files on the computer: capture.pkg, sys.log
 
 capture.pkg is encrypted, but sys.log gives more clues about what happened when the computer crashed (what it was connected to, what file was downloaded, and the user at the time of the crash).
@@ -80,3 +80,8 @@ Player can connect to the bot and answer some "security questions" of the bot in
 As soon as the packet is decrypted, the screen flashes and the game makes creepy, screeching noises. The text flashes on screen: THIS INCIDENT WILL BE REPORTED. The screen blinks off, then comes back: everything is *almost* the same as before, but slightly creepy and off.
 
 Lots of messages about how you've been identified and that the incident has been reported. Lots of dead-end clues. Maybe I'll add a "real" ending somewhere.
+
+## Hacking
+
+1. Scan for open ports
+2.

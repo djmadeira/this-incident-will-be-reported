@@ -14,7 +14,10 @@ window.requestAnimationFrame = window.requestAnimationFrame ||
   };
 var webcomponentsPolyfill = require('polyfill-webcomponents');
 
-var app = function () {
+var help;
+
+var cmd = function () {
+  "use strict";
   var inputTemplate, // Template for the input
       lnTemplate, // Template for a new line
       term, // The terminal in the DOM. This shouldn't go anywhere, so this won't have to be updated.
@@ -63,7 +66,7 @@ var app = function () {
 
   // Generate a unique, hexy ID (move that hexy bod grrl)
   var uniqueId = function uniqueId () {
-    var id = '';
+    var id = '',
         length = 16, // hnnnng so hexy
         chars = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f']; // That's 18,446,744,073,709,600,000 possibilities for those of you following at home
     for (var i=0; i < length; i++) {
@@ -77,12 +80,12 @@ var app = function () {
   };
 
   // When called, gets input from the field (if any) and calls the appropriate program, passing it token-ized arguments.
-  var parseInput = function () {;
+  var parseInput = function () {
     var val = input.value;
     if (val) {
       var tokens = val.split(' ');
-      if ( state.installed[tokens[0]] ) {
-        state.installed[tokens[0]].run(tokens);
+      if ( state.installed.indexOf(tokens[0]) != -1 ) {
+        programs[tokens[0]].run(tokens);
       } else {
         var lnout = appendOutput();
         lnout.innerHTML = err.cmdNotFound;
@@ -193,29 +196,20 @@ var app = function () {
   }
 
   var spc = function () {
-    return '\n<span class="spc"></span>';
+    return '<span class="spc"></span>';
   }
 
   // Sound "engine". Collection of functions for loading, playing and pausing sounds. Can also interrupt sounds.
   var loadSound = function (id, url, cb) {
-    if ( gtById(id) ) { cb(id); return; }
 
-    cb(id);
-  };
-
-  var getData = function (query, cb) {
-    var request = new XMLHttpRequest ();
-    request.onload = cb;
-    request.open('get', window.location.href + 'get.php?' + query, true);
-    request.send();
   };
 
   var saveGame = function () {
-    alert( JSON.stringify( gameState ) );
+    alert( JSON.stringify( state ) );
   };
 
   var loadGame = function () {
-    alert('What you wanna load?');
+    state = JSON.parse(prompt('State to load:'));
   };
 
   /**
@@ -304,13 +298,28 @@ var app = function () {
   init();
 
   var state = {
-    installed: {},
+    installed: ['help', 'whoami', 'list', 'install'],
     user: 'rachel',
-    wd: {
-      'read.pg': 'net://read',
-      'crash.log': "31.11.16 22:51: CRITICAL FAILURE: CONNECTION TERMINATED BY SYSTEM. Details:\n"
+    wd: 'local'
+  };
+
+  var wd = {
+    'local': {
+      'read.pg': function (accesser) {
+        if (accesser == 'install') {
+          state.installed.push('read');
+          return true;
+        }
+      },
+      'crash.log': function (accesser) {
+        if (accesser == 'read') {
+          return "31.11.16 22:51: CRITICAL FAILURE: CONNECTION TERMINATED BY SYSTEM. Details:\n";
+        }
+      }
     }
   };
+
+  var programs = {};
 
   var err = {
     noOutput: "This program has no output function (that's a bug)",
@@ -318,7 +327,7 @@ var app = function () {
   }
 
   window.setTimeout(function () {
-    startNote = Note({ // declared globally on purpose
+    window.startNote = Note({ // declared globally on purpose
       name: 'startNote',
       text: 'smashthestate',
       removable: true
@@ -327,19 +336,19 @@ var app = function () {
   }, 5000);
 
 
-  state.installed.help = Program({
+  programs.help = Program({
     desc: "Displays info about installed programs.",
     use: usageTable([ ['help', 'List all installed programs.'], ['help program', 'Where "program" is the name of an installed program. Display instructions for the program.'] ]),
     process: function (input, lnout, cb) {
       if ( input[0] != undefined ) {
-        if ( state.installed[input[0]] ) {
-          lnout.innerHTML = 'Description:\n'+ state.installed[input[0]].desc + spc() + state.installed[input[0]].use;
+        if ( programs[input[0]] ) {
+          lnout.innerHTML = 'Description:\n'+ programs[input[0]].desc + spc() + programs[input[0]].use;
         } else {
           lnout.innerHTML = 'Program "'+ input[0] +'" not found.';
         }
       } else {
         var print = "Installed programs:\n";
-        for (var program in state.installed) {
+        for (var program in programs) {
           print += '  '+ program +'\n';
         }
         print += 'For instructions on using a program, type "help program", where "program" is an installed program.'
@@ -349,7 +358,7 @@ var app = function () {
     }
   });
 
-  state.installed.whoami = Program({
+  programs.whoami = Program({
     desc: 'Displays info about the current user.',
     use: 'Usage:\nwhoami',
     process: function (input, lnout, cb) {
@@ -358,19 +367,16 @@ var app = function () {
     }
   });
 
-  state.installed.install = Program({
+  programs.install = Program({
     desc: 'Install programs from a .pg file or netloc.',
     use: usageTable([ ['install loc', 'Where "loc" is a netloc of a program to install (e.g. net://file.pg).'], ['install file.pg', 'Where "file.pg" is the name of a .pg file in the working directory.'] ]),
     process: function (input, lnout, cb) {
-      log(input);
       if (!input[0]) {
         lnout.innerHTML = this.use;
         return cb();
       }
-      if (state.wd[input[0]] && secret[input[0]]) {
-        var name = secret[input[0]].name;
-        state.installed[name] = Program(secret[input[0]].program);
-        delete state.wd[input[0]];
+      if ( wd[state.wd][input[0]] && wd[state.wd][input[0]]('install') ) {
+        delete wd[state.wd]['read.pg'];
         var anim = getTemplate('install-animation-template');
         lnout.appendChild(anim);
         var el = document.createElement('span');
@@ -380,55 +386,51 @@ var app = function () {
           cb();
         }, 2000, cb, lnout, el);
       } else {
-        lnout.innerHTML = 'Program "' + name + '" not found.';
+        lnout.innerHTML = 'Program "' + input[0] + '" not found.';
         cb();
       }
     },
   })
 
-  state.installed.list = Program({
+  programs.list = Program({
     desc: 'List files in the working directory.',
     use: usageTable([ ['list', 'List all files in the working directory'] ]),
     process: function (input, lnout, cb) {
       var output = "";
-      for (var $file in state.wd) {
-        output += $file + '\n';
+      for (var file in wd[state.wd]) {
+        output += file + '\n';
       }
       lnout.innerHTML = output;
       cb();
     }
   });
 
-  var secret = {
-    'read.pg': {
-      name: 'read',
-      program: {
-        desc: 'Read files in the working directory.',
-        use: usageTable([ ['read file', 'Where "file" is the name of a file in the working directory (try "list" to see files).'] ]),
-        process: function (input, lnout, cb) {
-          if ( ! input[0] ) {
-            lnout.innerHTML = this.use;
-          } else {
-            if ( state.wd[input[0]] ) {
-              var fileHeader = document.createElement('span');
-              fileHeader.innerHTML = 'File contents:\n==============\n';
-              lnout.appendChild(fileHeader);
-              var fileRead = document.createElement('span');
-              fileRead.innerHTML = state.wd[input[0]];
-              lnout.appendChild(fileRead);
-              var fileFooter = document.createElement('span');
-              fileFooter.innerHTML = '==============';
-              lnout.appendChild(fileFooter);
-            } else {
-              lnout.innerHTML = "File not found or not a readable file: " + input[0];
-            }
-          }
-          cb();
+  programs.read = Program({
+    desc: 'Read files in the working directory.',
+    use: usageTable([ ['read file', 'Where "file" is the name of a file in the working directory (try "list" to see files).'] ]),
+    process: function (input, lnout, cb) {
+      if ( ! input[0] ) {
+        lnout.innerHTML = this.use;
+      } else {
+        var file = wd[state.wd][input[0]] ? wd[state.wd][input[0]]('read') : false;
+        if ( file ) {
+          var fileHeader = document.createElement('span');
+          fileHeader.innerHTML = 'File contents:\n==============\n';
+          lnout.appendChild(fileHeader);
+          var fileRead = document.createElement('span');
+          fileRead.innerHTML = file;
+          lnout.appendChild(fileRead);
+          var fileFooter = document.createElement('span');
+          fileFooter.innerHTML = '==============';
+          lnout.appendChild(fileFooter);
+        } else {
+          lnout.innerHTML = "File not found or not a readable file: " + input[0];
         }
       }
+      cb();
     }
-  };
+  });
 
 };
 
-window.requestAnimationFrame(app);
+requestAnimationFrame(cmd);
