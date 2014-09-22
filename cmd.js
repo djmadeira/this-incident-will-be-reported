@@ -14,18 +14,16 @@ window.requestAnimationFrame = window.requestAnimationFrame ||
   };
 var webcomponentsPolyfill = require('polyfill-webcomponents');
 
-var help;
-
-var cmd = function () {
+var cmd = { run: function () {
   "use strict";
   var inputTemplate, // Template for the input
       lnTemplate, // Template for a new line
       term, // The terminal in the DOM. This shouldn't go anywhere, so this won't have to be updated.
       input,
       debug,
-      installed,
       notes,
-      errorMsgs;
+      errorMsgs,
+      muted = false;
 
   var init = function () {
     inputTemplate = getTemplate('input-template');
@@ -33,12 +31,12 @@ var cmd = function () {
     term = gtById('terminal');
     input;
     debug = true;
-    installed = {};
     notes = [];
     errorMsgs = {};
 
     gtById('save').addEventListener('click', saveGame);
     gtById('load').addEventListener('click', loadGame);
+    gtById('mute').addEventListener('click', toggleMute);
 
     appendInput();
     focusInput();
@@ -85,6 +83,8 @@ var cmd = function () {
     if (val) {
       var tokens = val.split(' ');
       if ( state.installed.indexOf(tokens[0]) != -1 ) {
+        var commandHistory = appendOutput();
+        commandHistory.innerHTML = '<span class="said-command">$ ' + input.value + '</span>';
         programs[tokens[0]].run(tokens);
       } else {
         var lnout = appendOutput();
@@ -97,8 +97,11 @@ var cmd = function () {
   // Appends a new output div with a unique ID. Returns a reference to the DOM node for further manipulation.
   var appendOutput = function () {
     var ln = lnTemplate.querySelector('.shell-ln').cloneNode(true),
-        id = uniqueId();
-    gtById('shell').parentNode.removeChild(gtById('shell'));
+        id = uniqueId(),
+        shell = gtById('shell');
+    if (shell) {
+      gtById('shell').parentNode.removeChild(gtById('shell'));
+    }
     ln.id = id;
     term.appendChild(ln);
     return ln;
@@ -199,17 +202,50 @@ var cmd = function () {
     return '<span class="spc"></span>';
   }
 
-  // Sound "engine". Collection of functions for loading, playing and pausing sounds. Can also interrupt sounds.
-  var loadSound = function (id, url, cb) {
-
+  var loadSound = function (file, options, cb) {
+    options = options || {},
+    cb = cb || function () {};
+    var audio = gtById(options.id);
+    if (audio) {
+      audio.load();
+      return cb(audio);
+    }
+    audio = document.createElement('audio');
+    audio.id = options.id;
+    audio.src = 'sound/' + file;
+    audio.loop = options.loop ? true : false;
+    audio.volume = options.volume || 1;
+    document.body.appendChild(audio);
+    return cb(audio);
   };
 
+  var playSound = function (id, options, cb) {
+    options = options || {},
+    cb = cb || function () {};
+    var audio = gtById(audio);
+    if (audio) {
+      audio.loop = options.loop ? true : false;
+      audio.volume = options.volume || 1;
+      audio.play();
+      return cb(audio);
+    }
+    return cb(new Error('Track not found.'));
+  }
+
+  var toggleMute = function () {
+    muted = !muted;
+    var els = document.getElementsByTagName('audio');
+    for (var i=0, j=els.length; i < j; i++) {
+      els[i].muted = muted;
+    }
+  }
+
   var saveGame = function () {
-    alert( JSON.stringify( state ) );
+    alert( "Save this text somewhere:\n" + JSON.stringify( state ) );
   };
 
   var loadGame = function () {
-    state = JSON.parse(prompt('State to load:'));
+    state = JSON.parse(prompt('Paste your save game here:'));
   };
 
   /**
@@ -295,6 +331,28 @@ var cmd = function () {
     return that;
   };
 
+  var File = function (my) {
+    var my = my || {},
+        that = {};
+
+    that.type = my.type || 'text';
+    that.access = my.access;
+    that.content = my.content;
+
+    return that;
+  };
+
+  var FileProgram = function (my) {
+    var my = my || {},
+        that = File({
+          type: 'program'
+        });
+
+    that.programName = my.programName;
+
+    return that;
+  };
+
   init();
 
   var state = {
@@ -305,18 +363,24 @@ var cmd = function () {
 
   var wd = {
     'local': {
-      'read.pg': function (accesser) {
-        if (accesser == 'install') {
-          state.installed.push('read');
-          return true;
-        }
-      },
-      'crash.log': function (accesser) {
-        if (accesser == 'read') {
-          return "31.11.16 22:51: CRITICAL FAILURE: CONNECTION TERMINATED BY SYSTEM. Details:\n";
-        }
-      }
+      'read.pg': FileProgram({
+        programName: 'read'
+      }),
+      'crash.log': File({
+        content: '2031/05/16 22:31 CRITICAL FAILURE: Connection terminated by host. Significant electrical damage detected. Emergency recovery mode active...\n'+ spc() +'\
+2031/05/16 22:42 Systems diagnostics completed.\n\
+CPU: 3/12 cores operational, cycles unstable, quantum state integrity check passed.\n\
+MEM: 3QB active, 152 sectors damaged, 48 OK.\n\
+Databanks: 19683QB checked, 8219QB passing, 9921QB recoverable, 1543QB irreparable.\n\
+To recover damaged data, install the Databank Recovery Tool&reg;: net://downloadportal.cyberdynesystems.corp/softwaretools?92757273135337173'
+      })
     }
+  };
+
+  var net = {
+    'net://downloadportal.cyberdynesystems.corp/softwaretools?92757273135337173': FileProgram({
+      programName: 'recoverytool'
+    })
   };
 
   var programs = {};
@@ -335,23 +399,40 @@ var cmd = function () {
     startNote.display();
   }, 5000);
 
+  loadSound('hdd-startup.mp3', {id: 'hdd-startup', loop: false, volume: 0.2}, function (audio) {
+    audio.play();
+    audio.addEventListener('ended', function () {
+      gtById('hdd-loop').play();
+    })
+  });
+  loadSound('hdd-loop.mp3', {id: 'hdd-loop', loop: true, volume: 0.3});
+
+  loadSound('ambient-city.mp3', {id: 'city-ambient', loop: true, volume: 0.04}, function (audio) {
+    audio.play();
+  });
+
+  loadSound('music-brooding.mp3', {id: 'brooding-music', loop: true, volume: 0.24}, function (audio) {
+    audio.play();
+  });
 
   programs.help = Program({
     desc: "Displays info about installed programs.",
     use: usageTable([ ['help', 'List all installed programs.'], ['help program', 'Where "program" is the name of an installed program. Display instructions for the program.'] ]),
     process: function (input, lnout, cb) {
-      if ( input[0] != undefined ) {
+      if ( input[0] ) {
         if ( programs[input[0]] ) {
           lnout.innerHTML = 'Description:\n'+ programs[input[0]].desc + spc() + programs[input[0]].use;
         } else {
           lnout.innerHTML = 'Program "'+ input[0] +'" not found.';
         }
       } else {
-        var print = "Installed programs:\n";
+        var print = "Installed programs:\n" + spc();
         for (var program in programs) {
-          print += '  '+ program +'\n';
+          if ( state.installed.indexOf(program) != -1 ) {
+            print += program +'\n';
+          }
         }
-        print += 'For instructions on using a program, type "help program", where "program" is an installed program.'
+        print += spc() + 'For instructions on using a program, type "help program", where "program" is an installed program.'
         lnout.innerHTML = print;
       }
       cb();
@@ -375,22 +456,31 @@ var cmd = function () {
         lnout.innerHTML = this.use;
         return cb();
       }
-      if ( wd[state.wd][input[0]] && wd[state.wd][input[0]]('install') ) {
-        delete wd[state.wd]['read.pg'];
-        var anim = getTemplate('install-animation-template');
-        lnout.appendChild(anim);
-        var el = document.createElement('span');
-        el.innerHTML = 'Program "' + name + '" installed successfully.';
-        window.setTimeout(function (cb, lnout, el) {
-          lnout.appendChild(el);
+      var file = wd[state.wd][input[0]] || net[input[0]];
+      if ( file ) {
+        if (file.type == 'program') {
+          state.installed.push(file.programName);
+
+          var anim = getTemplate('install-animation-template');
+          lnout.appendChild(anim);
+          var el = document.createElement('span');
+          el.innerHTML = 'Program "' + file.programName + '" installed successfully.';
+
+          window.setTimeout(function (cb, lnout, el) {
+            lnout.appendChild(el);
+            cb();
+          }, 2000, cb, lnout, el);
+        } else {
+          lnout.innerHTML = 'ERR: file "'+input[0]+'" is not a program.';
           cb();
-        }, 2000, cb, lnout, el);
+        }
+
       } else {
         lnout.innerHTML = 'Program "' + input[0] + '" not found.';
         cb();
       }
     },
-  })
+  });
 
   programs.list = Program({
     desc: 'List files in the working directory.',
@@ -412,25 +502,38 @@ var cmd = function () {
       if ( ! input[0] ) {
         lnout.innerHTML = this.use;
       } else {
-        var file = wd[state.wd][input[0]] ? wd[state.wd][input[0]]('read') : false;
+        var file = wd[state.wd][input[0]];
         if ( file ) {
-          var fileHeader = document.createElement('span');
-          fileHeader.innerHTML = 'File contents:\n==============\n';
-          lnout.appendChild(fileHeader);
-          var fileRead = document.createElement('span');
-          fileRead.innerHTML = file;
-          lnout.appendChild(fileRead);
-          var fileFooter = document.createElement('span');
-          fileFooter.innerHTML = '==============';
-          lnout.appendChild(fileFooter);
+          if (file.type == 'text') {
+            lnout.innerHTML = file.content;
+          } else {
+            lnout.innerHTML = 'ERR: file "'+ input[0] +'" is not a text file.';
+          }
         } else {
-          lnout.innerHTML = "File not found or not a readable file: " + input[0];
+          lnout.innerHTML = "File not found: " + input[0];
         }
       }
       cb();
     }
   });
 
-};
+  programs.recoverytool = Program({
+    desc: 'Repair damaged Databank cells.'+ spc() +'This courtesy software is provided to you by Cyberdyne Systems&reg; free of charge, although certain terms and conditions apply (you can find out more about our datascanning policies on our netportal.)',
+    use: usageTable([ ['recoverytool', 'Recover damaged data.'] ]),
+    process: function (input, lnout, cb) {
+      if (this.recovered) {
+        lnout.innerHTML = 'Data already recovered.';
+        state.installed.splice(state.installed.indexOf('recoverytool'), 1);
+      } else {
+        this.recovered = true;
+        wd.local['netmonkey.pg'] = FileProgram({
+          programName: 'netmonkey'
+        });
+        lnout.innerHTML = 'Data recovered.';
+      }
+      cb();
+    }
+  });
+}};
 
-requestAnimationFrame(cmd);
+requestAnimationFrame(cmd.run);

@@ -67,6 +67,9 @@ template {
   margin-bottom: 0.6em;
   display:block;
 }
+.said-command {
+  color: $term-color - #555;
+}
 .note {
   font-family: 'Nothing You Could Do', cursive;
   -webkit-font-smoothing: antialiased;
