@@ -241,11 +241,18 @@ var cmd = { run: function () {
   }
 
   var saveGame = function () {
-    alert( "Save this text somewhere:\n" + JSON.stringify( state ) );
+    var saveGame = {};
+    saveGame.state = state;
+    saveGame.wd = wd;
+    saveGame.net = net;
+    alert( "Save this text somewhere:\n\n" + JSON.stringify( saveGame ) );
   };
 
   var loadGame = function () {
-    state = JSON.parse(prompt('Paste your save game here:'));
+    var saveGame = JSON.parse(prompt('Paste your save game here:'));
+    state = saveGame.state;
+    wd = saveGame.wd;
+    net = saveGame.net;
   };
 
   /**
@@ -534,6 +541,15 @@ To recover damaged data, install the Databank Recovery Tool&reg;: net://download
       cb();
     }
   });
+
+  programs.netmonkey = Program({
+    desc: 'Connect to the tornet and view directories and message boards.',
+    use: '',
+    process: function (input, lnout, cb) {
+      cb();
+    }
+  });
+
 }};
 
 requestAnimationFrame(cmd.run);
