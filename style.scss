@@ -13,7 +13,17 @@ body {
   color: #fff;
   margin:0;
   font-family: Courier, monospace, sans-serif;
-  animation: fade 5s ease-out;
+  &:after {
+    display:block;
+    content: "";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    opacity: 0.1;
+  }
 }
 @keyframes fade {
   from {
@@ -23,18 +33,37 @@ body {
     opacity: 1;
   }
 }
+@keyframes light-flicker {
+  6%, 14%, 20%, 29%, 46% {
+    filter: brightness(100%)
+  }
+  10%, 24%, 33%, 43% {
+    filter: brightness(90%)
+  }
+}
+@keyframes police-lights {
+  0%, 100% {
+    background: transparent;
+  }
+  40%, 80% {
+    background: #FF2734;
+  }
+  20%, 60% {
+    background: #0068FD;
+  }
+}
 template {
   visibility:hidden; /* fallback */
 }
 .wrap {
   background: url('img/monitor.jpg') no-repeat top left;
-  position:relative;
   max-width: 800px;
   height: 600px;
   margin: 0 auto;
   padding: 65px 55px;
 }
 .terminal {
+  position:relative;
   width:100%;
   height:100%;
   color: $term-color;
@@ -42,7 +71,7 @@ template {
   overflow-y:scroll;
   -webkit-font-smoothing:none;
 }
-.shell input {
+.terminal input {
   -webkit-appearance: none;
   background: transparent;
   outline:none;
@@ -50,9 +79,11 @@ template {
   color: inherit;
   font-size:1em;
   display:inline-block;
-  width:90%;
   font-family: inherit;
   -webkit-font-smoothing:none;
+}
+.shell input {
+  width:90%;
   &:before {
     display:inline;
     content: "$";
@@ -153,6 +184,29 @@ hr {
 ::selection {
   background-color: #54F900;
   color: #fff;
+}
+.netmonkey-controls {
+  position: absolute;
+  display: inline;
+  bottom: 0.2em;
+  left: 0;
+  padding: 0 0.5em;
+  width: 100%;
+}
+.netmonkey-button {
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  background: transparent;
+  border:none;
+  color: inherit;
+  font-family:inherit;
+  font-size:1em;
+  cursor: pointer;
+}
+#netmonkey-navigator {
+  border-bottom: 1px solid $term-color;
+  width:80%;
+  margin-left: 0.5em;
 }
 @media only screen and (min-width: 800px) {
   body {

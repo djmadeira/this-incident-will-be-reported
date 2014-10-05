@@ -283,9 +283,10 @@ var cmd = { run: function () {
       noteText.innerHTML = my.text;
       note.appendChild(noteText);
       note.id = id;
-      term.appendChild(note);
+      document.body.appendChild(note);
 
       note.addEventListener('mousedown', function (event) {
+        playSound('sticky-remove');
         window[my.name].dragClickX = event.x;
         window[my.name].dragClickY = event.y;
         window.addEventListener('mousemove', window[my.name].drag);
@@ -321,18 +322,15 @@ var cmd = { run: function () {
 
     that.use = my.use;
     that.desc = my.desc;
+    that.process = my.process;
 
     that.run = function (input) {
       var lnout = appendOutput();
       input.splice(0, 1);
 
-      if ( typeof my.process == 'function' ) {
-        my.process(input, lnout, function () {
-          focusInput();
-        });
-      } else {
-        lnout.innerHTML = err.noOutput;
-      }
+      this.process(input, lnout, function () {
+        focusInput();
+      });
     }
 
     return that;
@@ -384,9 +382,14 @@ To recover damaged data, install the Databank Recovery Tool&reg;: net://download
     }
   };
 
-  var net = {
-    'net://downloadportal.cyberdynesystems.corp/softwaretools?92757273135337173': FileProgram({
+  var net = {   'net://downloadportal.cyberdynesystems.corp/softwaretools?92757273135337173': FileProgram({
       programName: 'recoverytool'
+    }),
+    'net://usrportal': File({
+      type: 'netpage',
+      access: function () {
+        return 'WELCOME TO THE NET. RESOURCES:';
+      }
     })
   };
 
@@ -421,6 +424,8 @@ To recover damaged data, install the Databank Recovery Tool&reg;: net://download
   loadSound('music-brooding.mp3', {id: 'brooding-music', loop: true, volume: 0.24}, function (audio) {
     audio.play();
   });
+
+  loadSound('stickyremove.mp3', {id: 'sticky-remove', volume: 0.8});
 
   programs.help = Program({
     desc: "Displays info about installed programs.",
@@ -542,11 +547,73 @@ To recover damaged data, install the Databank Recovery Tool&reg;: net://download
     }
   });
 
-  programs.netmonkey = Program({
+  /**
+   * @extends Program
+  */
+  var Netmonkey = function (my) {
+    var my = my || {};
+
+    var that = Program(my);
+
+    that.history = [];
+    that.currentLoc = 0;
+
+    that.start = function () {
+      var netmonkey = getTemplate('netmonkey-template');
+      term.appendChild(netmonkey);
+
+      this.viewer = gtById('netmonkey-viewer');
+      this.navigator = gtById('netmonkey-navigator');
+      this.back = gtById('netmonkey-back');
+      this.forward = gtById('netmonkey-forward');
+
+      this.loadPage('net://usrportal');
+
+      this.navigator.addEventListener('keydown', function (e) {
+        if (e.keyIdentifier == "Enter") {
+          programs.netmonkey.loadPage(this.navigator.value);
+        }
+      });
+
+      term.appendChild(netmonkey);
+    };
+
+    that.loadPage = function (loc) {
+      console.log(loc);
+      if (this.isNetloc(loc)) {
+        if (net[loc]) {
+          if (net[loc].type === 'netpage') {
+            this.viewer.innerHTML = net[loc].access();
+          } else {
+            this.viewer.innerHTML = 'Err: Netloc is not a netpage. Perhaps it can be opened by another program?';
+          }
+        } else {
+          this.viewer.innerHTML = 'Netloc not found.';
+        }
+      } else {
+        this.viewer.innerHTML = 'Err: invalid Netloc.';
+      }
+    };
+
+    that.isNetloc = function (loc) {
+      return true;
+    };
+
+    that.quit = function () {
+      this.quitCb();
+    };
+
+    return that;
+  }
+
+  programs.netmonkey = Netmonkey({
     desc: 'Connect to the tornet and view directories and message boards.',
     use: '',
     process: function (input, lnout, cb) {
-      cb();
+      this.input = input;
+      this.lnout = lnout;
+      this.start();
+      this.quitCb = cb;
     }
   });
 
