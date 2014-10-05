@@ -1,10 +1,4 @@
 /**
-  * Way to view source friend! Here's a rundown of how it works:
-  * derp derp hax quick solution half-assed thing derp herp derp.
-  * Don't look, unless you were looking for a manual on how *not* to write code.
-**/
-
-/**
  * Boring Polyfills
  */
 window.requestAnimationFrame = window.requestAnimationFrame ||
