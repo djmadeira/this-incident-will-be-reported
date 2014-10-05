@@ -1,0 +1,269 @@
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+       box-sizing: border-box; }
+
+html {
+  background: #000; }
+
+body {
+  font-size: 18px;
+  line-height: 1.2;
+  background: #000 url('img/bg.jpg') no-repeat top center;
+  color: #fff;
+  margin: 0;
+  font-family: Courier, monospace, sans-serif; }
+  body:after {
+    display: block;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.1; }
+
+@-webkit-keyframes fade {
+  from {
+    opacity: 0; }
+
+  to {
+    opacity: 1; } }
+
+@keyframes fade {
+  from {
+    opacity: 0; }
+
+  to {
+    opacity: 1; } }
+
+@-webkit-keyframes light-flicker {
+  6%, 14%, 20%, 29%, 46% {
+    -webkit-filter: brightness(100%);
+            filter: brightness(100%); }
+
+  10%, 24%, 33%, 43% {
+    -webkit-filter: brightness(90%);
+            filter: brightness(90%); } }
+
+@keyframes light-flicker {
+  6%, 14%, 20%, 29%, 46% {
+    -webkit-filter: brightness(100%);
+            filter: brightness(100%); }
+
+  10%, 24%, 33%, 43% {
+    -webkit-filter: brightness(90%);
+            filter: brightness(90%); } }
+
+@-webkit-keyframes police-lights {
+  0%, 100% {
+    background: transparent; }
+
+  40%, 80% {
+    background: #FF2734; }
+
+  20%, 60% {
+    background: #0068FD; } }
+
+@keyframes police-lights {
+  0%, 100% {
+    background: transparent; }
+
+  40%, 80% {
+    background: #FF2734; }
+
+  20%, 60% {
+    background: #0068FD; } }
+
+template {
+  visibility: hidden;
+  /* fallback */ }
+
+.wrap {
+  background: url('img/monitor.jpg') no-repeat top left;
+  max-width: 800px;
+  height: 600px;
+  margin: 0 auto;
+  padding: 65px 55px; }
+
+.terminal {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: #EFF6FF;
+  padding: 1em;
+  overflow-y: scroll;
+  -webkit-font-smoothing: none; }
+
+.terminal input {
+  -webkit-appearance: none;
+  background: transparent;
+  outline: none;
+  border: none;
+  color: inherit;
+  font-size: 1em;
+  display: inline-block;
+  font-family: inherit;
+  -webkit-font-smoothing: none; }
+
+.shell input {
+  width: 90%; }
+  .shell input:before {
+    display: inline;
+    content: "$"; }
+
+.shell-ln {
+  white-space: pre-wrap;
+  margin-left: 0.6em;
+  margin-bottom: 0.3em; }
+
+.spc {
+  margin-bottom: 0.6em;
+  display: block; }
+
+.said-command {
+  color: #9aa1aa; }
+
+.note {
+  font-family: 'Nothing You Could Do', cursive;
+  -webkit-font-smoothing: antialiased;
+  position: absolute;
+  top: 103%;
+  right: 50%;
+  margin-right: -45%;
+  background: -webkit-linear-gradient(bottom, #EAE8E0, #F9F7EF);
+  background: linear-gradient(to top, #EAE8E0, #F9F7EF);
+  color: #000;
+  padding: 0.5em;
+  width: 90vw;
+  max-width: 14em;
+  min-height: 8em;
+  cursor: pointer;
+  -webkit-animation: note 0.3s ease;
+          animation: note 0.3s ease;
+  z-index: 9999; }
+  .note .note-rm {
+    position: relative;
+    color: #000;
+    text-decoration: none;
+    font-size: 2em;
+    float: right;
+    top: -0.5em; }
+  .note p {
+    margin-bottom: 0; }
+
+@-webkit-keyframes note {
+  from {
+    opacity: 0;
+    -webkit-transform: scale(1.1);
+            transform: scale(1.1); }
+
+  to {
+    opacity: 1;
+    -webkit-transform: scale(1);
+            transform: scale(1); } }
+
+@keyframes note {
+  from {
+    opacity: 0;
+    -webkit-transform: scale(1.1);
+            transform: scale(1.1); }
+
+  to {
+    opacity: 1;
+    -webkit-transform: scale(1);
+            transform: scale(1); } }
+
+.links {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 0.5em;
+  font-size: 0.8em; }
+  .links a {
+    color: #dad1d2; }
+
+.install-animation {
+  height: 1em;
+  display: block;
+  border: 2px solid;
+  position: relative; }
+  .install-animation .install-animation-inner {
+    position: absolute;
+    background: #EFF6FF;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    -webkit-transform-origin: 0 0;
+        -ms-transform-origin: 0 0;
+            transform-origin: 0 0;
+    -webkit-animation: installer 2s steps(8);
+            animation: installer 2s steps(8);
+    -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards; }
+
+@-webkit-keyframes installer {
+  from {
+    -webkit-transform: scaleX(0);
+            transform: scaleX(0); }
+
+  to {
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1); } }
+
+@keyframes installer {
+  from {
+    -webkit-transform: scaleX(0);
+            transform: scaleX(0); }
+
+  to {
+    -webkit-transform: scaleX(1);
+            transform: scaleX(1); } }
+
+hr {
+  border-color: #EFF6FF; }
+
+::-webkit-scrollbar {
+  display: none; }
+
+::-moz-selection {
+  background-color: #54F900;
+  color: #fff; }
+
+::selection {
+  background-color: #54F900;
+  color: #fff; }
+
+.netmonkey-controls {
+  position: absolute;
+  display: inline;
+  bottom: 0.2em;
+  left: 0;
+  padding: 0 0.5em;
+  width: 100%; }
+
+.netmonkey-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: 1em;
+  cursor: pointer; }
+
+#netmonkey-navigator {
+  border-bottom: 1px solid #EFF6FF;
+  width: 80%;
+  margin-left: 0.5em; }
+
+@media only screen and (min-width: 800px) {
+  body {
+    padding: 100px 0 0; } }
+
+@media only screen and (min-width: 1200px) {
+  .note {
+    top: 5%;
+    left: 70%;
+    margin: 0; } }
